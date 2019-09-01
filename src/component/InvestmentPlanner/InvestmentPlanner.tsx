@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { SignIn, SignUp } from "./Login";
+import { SignIn } from "./Login";
 
 /** Stylesheet Imports */
 import "./InvestmentPlanner.scss";
