@@ -5,15 +5,15 @@ import * as React from "react";
 import { shallow, ShallowWrapper } from "enzyme";
 
 /** Import Tested Component */
-import About from "./About";
+import NavigationSegment from "./NavigationSegment";
 
-describe("<About />", () => {
+describe("<NavigationSegment />", () => {
 
     describe("default", () => {
         let html: ShallowWrapper;
 
         beforeAll(() => {
-            html = shallow(<About />);
+            html = shallow(<NavigationSegment />);
         });
 
         it("should render a <div />", () => {

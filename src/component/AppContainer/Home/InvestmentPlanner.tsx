@@ -1,7 +1,8 @@
 import * as React from "react";
 
 /** Stylesheet Imports */
-import "./About.scss";
+import "./InvestmentPlanner.scss";
+import { HomePageLayout } from ".";
 
 export interface Props {
     children?: React.ReactNode
@@ -10,7 +11,7 @@ export interface Props {
 export interface State {
 }
 
-export default class About extends React.Component<Props, State> {
+export default class InvestmentPlanner extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props)
@@ -21,7 +22,9 @@ export default class About extends React.Component<Props, State> {
 
     render() {
         return (
-            <div>{ this.props.children }</div>
+            <div className='investment-planner'>
+                <HomePageLayout />
+            </div>
         )
     }
 }
