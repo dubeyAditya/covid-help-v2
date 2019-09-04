@@ -6,6 +6,7 @@ import "./AppContainer.scss";
 import { RouterLink } from "../../types/routerLinkTypes";
 import InvestmentPlanner from "./Home";
 
+
 export interface Props {
     children?: React.ReactNode
     routerLinks: RouterLink[]
@@ -27,7 +28,6 @@ export default class AppContainer extends React.Component<Props, State> {
         return (
             <div className='investa-app-container'>
                 <InvestmentPlanner />
-                {/* <Navigation routerLinks={this.props.routerLinks} /> */}
             </div>
         )
     }
