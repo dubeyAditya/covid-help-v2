@@ -1,34 +1,26 @@
 import * as React from "react";
-
-/** Stylesheet Imports */
 import "./AppContainer.scss";
-// import Navigation from "./Navigation";
-import { RouterLink } from "../../types/routerLinkTypes";
-import InvestmentPlanner from "./Home";
+import { DashBoard } from ".";
 
+export interface Props {}
 
-export interface Props {
-    children?: React.ReactNode
-    routerLinks: RouterLink[]
+export interface State {}
+
+class AppContainer extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {};
+    console.log(this.context);
+  }
+
+  render() {
+    return (
+      <div className="application-container">
+        <DashBoard />
+      </div>
+    );
+  }
 }
 
-export interface State {
-}
-
-export default class AppContainer extends React.Component<Props, State> {
-
-    constructor(props: Props) {
-        super(props)
-
-        this.state = {
-        }
-    }
-
-    render() {
-        return (
-            <div className='investa-app-container'>
-                <InvestmentPlanner />
-            </div>
-        )
-    }
-}
+export default AppContainer;

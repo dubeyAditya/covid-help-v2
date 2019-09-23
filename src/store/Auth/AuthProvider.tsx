@@ -1,20 +1,19 @@
 import React, { ReactNode } from "react";
-import { Context, AuthProviderContext } from './AuthContext'
+import { Context, AuthProviderContext } from "./AuthContext";
 
-export interface AuthProviderProviderProps {
-    children: ReactNode
+export interface AuthProviderProps {
+  children: ReactNode;
 }
 
-export function AuthProviderProvider({ children }: AuthProviderProviderProps) {
-    let user = ""
+export function AuthProvider({ children }: AuthProviderProps) {
+  let user = "Test user";
 
-    const value: AuthProviderContext = {
-        currentUser: user,
-        setCurrentUser: (cuser: string) => {
-            user = cuser;
-        }
+  const value: AuthProviderContext = {
+    currentUser: user,
+    setCurrentUser: (cuser: string) => {
+      user = cuser;
     }
+  };
 
-    return <Context.Provider value={value}>{children}</Context.Provider>
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 }
-

@@ -1,20 +1,36 @@
-import React from 'react';
-import './App.scss';
+import React from "react";
+import "./App.scss";
 
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router } from "react-router-dom";
 
-import AppContainer from './component/AppContainer';
+import AppContainer from "./component/AppContainer"; // Root or Container Component
 
-import config from './config';
+import withFirebaseAuth from "react-with-firebase-auth"; // authorization
 
-const App: React.FC = () => {
+import firebaseAdapter from "./firebase/FirebaseAuthAdapter";
+import Icon from "antd/lib/icon";
+import Card from "antd/lib/card";
+import "./App.scss";
+
+const App = ({ user, signOut, signInWithGoogle }: any) => {
   return (
-    <div className="App">
-      <Router>
-        <AppContainer routerLinks={config.routerLinks} />
-      </Router>
-    </div>
+    <Router>
+      {!user ? (
+        <div className="flex">
+          <Card style={{ width: 300 }}>
+            <div className="btn-google">
+              <button onClick={signInWithGoogle}>
+                {" "}
+                <Icon type="google" />
+              </button>
+            </div>
+          </Card>
+        </div>
+      ) : (
+        <AppContainer />
+      )}
+    </Router>
   );
-}
+};
 
-export default App;
+export default withFirebaseAuth(firebaseAdapter)(App);
