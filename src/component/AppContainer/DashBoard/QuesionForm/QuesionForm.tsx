@@ -178,9 +178,9 @@ class QuesionForm extends React.Component<Props, State> {
                   ]
                 })(
                   <Select placeholder="Select a subject">
-                    <Option value="p">Physics</Option>
-                    <Option value="c">Chemistry</Option>
-                    <Option value="m">Maths</Option>
+                    <Option value="Physics">Physics</Option>
+                    <Option value="Chemistry">Chemistry</Option>
+                    <Option value="Maths">Maths</Option>
                   </Select>
                 )}
               </Form.Item>

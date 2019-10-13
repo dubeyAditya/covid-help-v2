@@ -31,7 +31,11 @@ const ViewQuestions: React.FC<Props> = ({
           header={<h2>{subject}</h2>}
           bordered
           dataSource={questionList}
-          renderItem={(item: any) => <List.Item>{item}</List.Item>}
+          renderItem={(item: any, index: number) => (
+            <List.Item>
+              {index + 1}. {item}
+            </List.Item>
+          )}
         />
       </Drawer>
     </div>
