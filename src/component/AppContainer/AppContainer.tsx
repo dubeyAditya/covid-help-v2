@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./AppContainer.scss";
 import { DashBoard } from ".";
-
+import { BrowserRouter as Router } from "react-router-dom";
 export interface Props {}
 
 export interface State {}
@@ -17,7 +17,9 @@ class AppContainer extends React.Component<Props, State> {
   render() {
     return (
       <div className="application-container">
-        <DashBoard />
+        <Router>
+          <DashBoard />
+        </Router>
       </div>
     );
   }

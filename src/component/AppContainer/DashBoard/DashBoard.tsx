@@ -1,98 +1,165 @@
 import * as React from "react";
-import { Layout, Menu, Breadcrumb, Icon } from "antd";
-/** Stylesheet Imports */
+import { QuesionForm, ExamsTable } from ".";
 import "./DashBoard.scss";
-
+import { Layout, Menu, Breadcrumb, Icon } from "antd";
+import { Link, Route, withRouter, RouteComponentProps } from "react-router-dom";
+import StudentsTable from "./StudentsTable";
+import UserContext from "../../../store/userContext";
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
-export interface Props {
+export interface Props extends RouteComponentProps {
   children?: React.ReactNode;
 }
 
 export interface State {}
 
-export default class DashBoard extends React.Component<Props, State> {
+class DashBoard extends React.Component<Props, State> {
+  static contextType = UserContext;
+
   constructor(props: Props) {
     super(props);
 
     this.state = {};
   }
 
+  componentDidMount() {
+    this.props.history.push("/myExam");
+  }
+
+  renderAdminNavigation = () => {
+    return (
+      <Menu
+        mode="inline"
+        defaultSelectedKeys={["2"]}
+        defaultOpenKeys={["sub2"]}
+        style={{ height: "100%", borderRight: 0 }}
+      >
+        <SubMenu
+          key="sub1"
+          title={
+            <span>
+              <Icon type="user" />
+              Students
+            </span>
+          }
+        >
+          <Menu.Item key="1">
+            <Link to="/students">Students Details</Link>
+          </Menu.Item>
+        </SubMenu>
+        <SubMenu
+          key="sub2"
+          title={
+            <span>
+              <Icon type="laptop" />
+              Exams
+            </span>
+          }
+        >
+          <Menu.Item key="1">
+            <Link to="/addExam"> Add Exam </Link>
+          </Menu.Item>
+          <Menu.Item key="2">
+            <Link to="/myExam">My Exams</Link>
+          </Menu.Item>
+          <Menu.Item key="3">All Exams</Menu.Item>
+        </SubMenu>
+        <SubMenu
+          key="sub3"
+          title={
+            <span>
+              <Icon type="notification" />
+              Announcements
+            </span>
+          }
+        >
+          <Menu.Item key="9">Holidays</Menu.Item>
+          <Menu.Item key="10">New Batches</Menu.Item>
+          <Menu.Item key="11">Extra Classes</Menu.Item>
+        </SubMenu>
+      </Menu>
+    );
+  };
+
+  renderStudentMenu = () => {
+    return (
+      <Menu
+        mode="inline"
+        defaultSelectedKeys={["1"]}
+        defaultOpenKeys={["sub1"]}
+        style={{ height: "100%", borderRight: 0 }}
+      >
+        <SubMenu
+          key="sub1"
+          title={
+            <span>
+              <Icon type="laptop" />
+              Exams
+            </span>
+          }
+        >
+          <Menu.Item key="1">
+            <Link to="/myExam">My Exams</Link>
+          </Menu.Item>
+        </SubMenu>
+        <SubMenu
+          key="sub2"
+          title={
+            <span>
+              <Icon type="notification" />
+              Announcements
+            </span>
+          }
+        >
+          <Menu.Item key="9">Holidays</Menu.Item>
+          <Menu.Item key="10">New Batches</Menu.Item>
+          <Menu.Item key="11">Extra Classes</Menu.Item>
+        </SubMenu>
+      </Menu>
+    );
+  };
+
+  showNavigation = () => {
+    const { email } = this.context;
+    return ["rkkarma1044@gmail.com", "dubey.aditya092@gmail.com"].includes(
+      email
+    )
+      ? this.renderAdminNavigation()
+      : this.renderStudentMenu();
+  };
+
   render() {
+    const { showNavigation } = this;
+    const { displayName } = this.context;
     return (
       //   <div className="dashboard-wrapper">
       <Layout>
         <Header className="header">
-          <div className="logo" />
           <Menu
             theme="dark"
             mode="horizontal"
-            defaultSelectedKeys={["2"]}
+            defaultSelectedKeys={["1"]}
             style={{ lineHeight: "64px" }}
           >
-            <Menu.Item key="1">nav 1</Menu.Item>
-            <Menu.Item key="2">nav 2</Menu.Item>
-            <Menu.Item key="3">nav 3</Menu.Item>
+            <Menu.Item key="1">Newton Academy</Menu.Item>
+            <Menu.Item key="2" disabled={true}>
+              Hi! {displayName}
+            </Menu.Item>
           </Menu>
         </Header>
         <Layout>
           <Sider width={200} style={{ background: "#fff" }}>
-            <Menu
-              mode="inline"
-              defaultSelectedKeys={["1"]}
-              defaultOpenKeys={["sub1"]}
-              style={{ height: "100%", borderRight: 0 }}
-            >
-              <SubMenu
-                key="sub1"
-                title={
-                  <span>
-                    <Icon type="user" />
-                    subnav 1
-                  </span>
-                }
-              >
-                <Menu.Item key="1">option1</Menu.Item>
-                <Menu.Item key="2">option2</Menu.Item>
-                <Menu.Item key="3">option3</Menu.Item>
-                <Menu.Item key="4">option4</Menu.Item>
-              </SubMenu>
-              <SubMenu
-                key="sub2"
-                title={
-                  <span>
-                    <Icon type="laptop" />
-                    subnav 2
-                  </span>
-                }
-              >
-                <Menu.Item key="5">option5</Menu.Item>
-                <Menu.Item key="6">option6</Menu.Item>
-                <Menu.Item key="7">option7</Menu.Item>
-                <Menu.Item key="8">option8</Menu.Item>
-              </SubMenu>
-              <SubMenu
-                key="sub3"
-                title={
-                  <span>
-                    <Icon type="notification" />
-                    subnav 3
-                  </span>
-                }
-              >
-                <Menu.Item key="9">option9</Menu.Item>
-                <Menu.Item key="10">option10</Menu.Item>
-                <Menu.Item key="11">option11</Menu.Item>
-                <Menu.Item key="12">option12</Menu.Item>
-              </SubMenu>
-            </Menu>
+            {showNavigation()}
           </Sider>
-          <Layout style={{ padding: "0 24px 24px" }}>
+          <Layout
+            className="display-container"
+            style={{ minHeight: "100%", padding: "0 24px 24px" }}
+          >
             <Breadcrumb style={{ margin: "16px 0" }}>
               <Breadcrumb.Item>Home</Breadcrumb.Item>
-              <Breadcrumb.Item>List</Breadcrumb.Item>
-              <Breadcrumb.Item>App</Breadcrumb.Item>
+              <Breadcrumb.Item>Exams</Breadcrumb.Item>
+              <Breadcrumb.Item>My Exams</Breadcrumb.Item>
             </Breadcrumb>
             <Content
               style={{
@@ -100,9 +167,14 @@ export default class DashBoard extends React.Component<Props, State> {
                 padding: 24,
                 margin: 0,
                 minHeight: 280,
-                height: "s"
+                height: "100%",
+                overflowY: "auto"
               }}
-            ></Content>
+            >
+              <Route path="/students" component={StudentsTable}></Route>
+              <Route path="/myExam" component={ExamsTable}></Route>
+              <Route path="/addExam" component={QuesionForm}></Route>
+            </Content>
           </Layout>
         </Layout>
       </Layout>
@@ -110,3 +182,5 @@ export default class DashBoard extends React.Component<Props, State> {
     );
   }
 }
+
+export default withRouter(DashBoard);

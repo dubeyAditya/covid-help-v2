@@ -1,35 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.scss";
 
-import { BrowserRouter as Router } from "react-router-dom";
+import Loading from "./component/Loading";
+
+import Login from "./component/Login";
 
 import AppContainer from "./component/AppContainer"; // Root or Container Component
 
 import withFirebaseAuth from "react-with-firebase-auth"; // authorization
 
 import firebaseAdapter from "./firebase/FirebaseAuthAdapter";
-import Icon from "antd/lib/icon";
-import Card from "antd/lib/card";
-import "./App.scss";
+
+import UserContext from "./store/userContext";
 
 const App = ({ user, signOut, signInWithGoogle }: any) => {
-  return (
-    <Router>
-      {!user ? (
-        <div className="flex">
-          <Card style={{ width: 300 }}>
-            <div className="btn-google">
-              <button onClick={signInWithGoogle}>
-                {" "}
-                <Icon type="google" />
-              </button>
-            </div>
-          </Card>
-        </div>
-      ) : (
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
+
+  const getContent = () => {
+    return (
+      <UserContext.Provider value={user}>
+        {" "}
         <AppContainer />
-      )}
-    </Router>
+      </UserContext.Provider>
+    );
+  };
+
+  const authenticateUser = () => {
+    return !user ? <Login signInWithGoogle={signInWithGoogle} /> : getContent();
+  };
+
+  return (
+    <div className="application-wrapper">
+      {loading ? <Loading /> : authenticateUser()}
+    </div>
   );
 };
 
