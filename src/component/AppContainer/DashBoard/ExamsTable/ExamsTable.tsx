@@ -1,39 +1,62 @@
 import * as React from "react";
 
-import { Table, Divider, Tag } from "antd";
+import { Table, Divider } from "antd";
 /** Stylesheet Imports */
 import "./ExamsTable.scss";
 
-// import json from "../../../../store/exams";
+
+import FirebaseAdapter from "../../../../firebase/FirebaseAuthAdapter";
 
 const { Column } = Table;
 
-const exams: any = [];
 
 export interface Props {
   children?: React.ReactNode;
 }
 
-export interface State {}
+export interface State {
+  isLoading: boolean;
+  exams: [];
+}
 
 export default class ExamsTable extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      isLoading: true,
+      exams: []
+    };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     //fetch data from firebase
+    const that = this;
+    const db = FirebaseAdapter.firestore;
+    let exams: any = [];
+    db.collection("exams").get().then((querySnapshot: any) => {
+      querySnapshot.forEach((doc: any) => {
+        const exam = { key: doc.id, ...doc.data() }
+        exams.push(exam);
+        console.log(exams);
+        that.setState({ exams })
+      });
+    });
+
+  }
+
+  viewQuestions = ()=> {
+   // add code to view questions
   }
 
   render() {
+    const {viewQuestions} = this;
     return (
-      <Table dataSource={exams}>
+      <Table dataSource={this.state.exams}>
         <Column title="Exam Name" dataIndex="name" key="name" />
         <Column title="Subject" dataIndex="subject" key="subject" />
         <Column title="Topic" dataIndex="topic" key="topic" />
-        <Column
+        {/* <Column
           title="Medium"
           dataIndex="medium"
           key="medium"
@@ -46,13 +69,13 @@ export default class ExamsTable extends React.Component<Props, State> {
               ))}
             </span>
           )}
-        />
+        /> */}
         <Column
           title="Action"
           key="action"
           render={(text, record: any) => (
             <span>
-              <a href="/myExams">View</a>
+              <a href="/myExams" onClick={viewQuestions}>View</a>
               <Divider type="vertical" />
               <a href="/myExams">Delete</a>
             </span>
