@@ -8,3 +8,8 @@ pipelines:
         script:
           - npm install
           - npm run build
+          - pipe: atlassian/heroku-deploy:1.1.0
+            variables:
+               HEROKU_API_KEY: $HEROKU_API_KEY
+               HEROKU_APP_NAME: $HEROKU_APP_NAME
+               ZIP_FILE: 'newton-sources.tar.gz'
