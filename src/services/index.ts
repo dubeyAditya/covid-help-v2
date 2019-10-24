@@ -1,6 +1,6 @@
 import FireBase from "../firebase/FirebaseAuthAdapter";
 const db = FireBase.getFireStore();
-
+const storage =  FireBase.getStorage();
 const service = {
     get: async function (collectionName: string) {
         const snapshot = await db.collection(collectionName).get();
@@ -12,7 +12,7 @@ const service = {
         return exams;
     },
 
-    add: function () {
+    add: function (data:any) {
 
     },
 
@@ -24,8 +24,10 @@ const service = {
 
     },
 
-    upload: function () {
-
+    upload: async function (file: any) {
+        const metadata = { contentType: file.type};
+        await storage.ref().child(file.name).put(file, metadata);
+        return await storage.ref().child(file.name).getDownloadURL();
     }
 };
 export default service;

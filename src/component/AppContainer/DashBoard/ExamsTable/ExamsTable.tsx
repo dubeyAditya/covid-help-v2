@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 
 import { Table, Divider } from "antd";
 /** Stylesheet Imports */
@@ -10,71 +10,35 @@ import api from "../../../../services";
 const { Column } = Table;
 
 
-export interface Props {
-  children?: React.ReactNode;
-}
+const ExamsTable = () => {
 
-export interface State {
-  isLoading: boolean;
-  exams: [];
-}
+  const [exams, setExams] = useState([]);
 
-export default class ExamsTable extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      isLoading: true,
-      exams: []
-    };
-  }
-
-  componentWillMount() {
-    const that = this;
+  useEffect(() => {
     api.get("exams").then((exams: []) => {
-      that.setState({ exams });
+      setExams(exams);
     }).catch((err: any) => {
       console.log(err);
     });
-  }
+  }, []);
 
-  viewQuestions = () => {
-    // add code to view questions
-  }
-
-  render() {
-    const { viewQuestions } = this;
-    return (
-      <Table dataSource={this.state.exams}>
-        <Column title="Exam Name" dataIndex="name" key="name" />
-        <Column title="Subject" dataIndex="subject" key="subject" />
-        <Column title="Topic" dataIndex="topic" key="topic" />
-        {/* <Column
-          title="Medium"
-          dataIndex="medium"
-          key="medium"
-          render={tags => (
-            <span>
-              {tags.map((tag: any) => (
-                <Tag color="blue" key={tag}>
-                  {tag}
-                </Tag>
-              ))}
-            </span>
-          )}
-        /> */}
-        <Column
-          title="Action"
-          key="action"
-          render={(text, record: any) => (
-            <span>
-              <a href="/myExams" onClick={viewQuestions}>View</a>
-              <Divider type="vertical" />
-              <a href="/myExams">Delete</a>
-            </span>
-          )}
-        />
-      </Table>
-    );
-  }
+  return (
+    <Table dataSource={exams}>
+      <Column title="Exam Name" dataIndex="name" key="name" />
+      <Column title="Subject" dataIndex="subject" key="subject" />
+      <Column title="Topic" dataIndex="topic" key="topic" />
+      <Column
+        title="Action"
+        key="action"
+        render={(text, record: any) => (
+          <span>
+            <a href="/myExams" >View</a>
+            <Divider type="vertical" />
+            <a href="/myExams">Delete</a>
+          </span>
+        )}
+      />
+    </Table>
+  );
 }
+export default ExamsTable;

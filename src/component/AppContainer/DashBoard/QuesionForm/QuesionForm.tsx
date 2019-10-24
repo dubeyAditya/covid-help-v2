@@ -1,11 +1,13 @@
 import * as React from "react";
 
-import { Form, Select, Input, Button, Icon, Row, Col } from "antd";
+import { Form, Select, Input, Button, Icon, Row, Col, Upload, message } from "antd";
 
-import { Topics } from "../../../../types/listEnums";
+
+import api from "../../../../services";
+
+import ViewQuestions from "../ViewQuestions";
 
 import "./QuesionForm.scss";
-import ViewQuestions from "../ViewQuestions";
 
 const { Option } = Select;
 export interface Props {
@@ -14,10 +16,12 @@ export interface Props {
 }
 
 export interface State {
-  topics: Topics[];
+  topics: "";
   isDrawerVisible: boolean;
   questionList: [];
   subject: string;
+  url: string;
+  fileName: string;
 }
 
 let id = 0;
@@ -27,10 +31,12 @@ class QuesionForm extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      topics: [{ key: "na", value: "Not Applicable" }],
+      topics: "",
       isDrawerVisible: false,
       questionList: [],
-      subject: ""
+      subject: "",
+      url: "",
+      fileName:""
     };
   }
 
@@ -42,9 +48,8 @@ class QuesionForm extends React.Component<Props, State> {
     e.preventDefault();
     this.props.form.validateFields((err: any, values: any) => {
       if (!err) {
-        const { questionList, subject } = values;
         console.log("Received values of form: ", values);
-        this.setState({ questionList, subject });
+        api.add(values)
         // Push values to firebase
       }
     });
@@ -91,58 +96,30 @@ class QuesionForm extends React.Component<Props, State> {
 
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form;
-    const { topics } = this.state;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 5 }
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 19 }
-      }
-    };
-    const formItemLayoutWithOutLabel = {
-      wrapperCol: {
-        xs: { span: 24, offset: 0 },
-        sm: { span: 19, offset: 5 }
-      }
-    };
+    const that = this;;
     getFieldDecorator("keys", { initialValue: [] });
-    const keys = getFieldValue("keys");
-    const formItems = keys.map(
-      (k: string | number | undefined, index: number) => (
-        <Form.Item
-          {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-          label={index === 0 ? "Questions" : ""}
-          required={true}
-          key={k}
-        >
-          {getFieldDecorator(`questionList[${k}]`, {
-            validateTrigger: ["onChange", "onBlur"],
-            rules: [
-              {
-                required: true,
-                whitespace: true,
-                message: "Please input question's or delete this field."
-              }
-            ]
-          })(
-            <Input
-              placeholder="type your question here"
-              style={{ width: "60%", marginRight: 8 }}
-            />
-          )}
-          {keys.length > 1 ? (
-            <Icon
-              className="dynamic-delete-button"
-              type="minus-circle-o"
-              onClick={() => this.remove(k)}
-            />
-          ) : null}
-        </Form.Item>
-      )
-    );
+
+    const props = {
+      name: 'file',
+      action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+      headers: {
+        authorization: 'authorization-text',
+      },
+      onChange(info: any) {
+        console.log(info);
+        if (info.file.status !== 'uploading') {
+          console.log(info.file, info.fileList);
+        }
+        if (info.file.status === 'done') {
+          message.success(`${info.file.name} file uploaded successfully`);
+          api.upload(info.file.originFileObj).then((url) => {
+            that.setState({ url,fileName: info.file.name });
+          })
+        } else if (info.file.status === 'error') {
+          message.error(`${info.file.name} file upload failed.`);
+        }
+      },
+    };
 
     return (
       <>
@@ -153,23 +130,36 @@ class QuesionForm extends React.Component<Props, State> {
         >
           <Row gutter={24}>
             <Col span={24}>
-              <Form.Item wrapperCol={{ span: 3, offset: 18 }}>
+              <Form.Item  wrapperCol={{ span: 6 ,offset: 18 }}>
                 <Row gutter={24}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Button type="primary" onClick={this.showDrawer}>
-                      View
+                      Preview
                     </Button>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Button type="primary" htmlType="submit">
                       Submit
                     </Button>
                   </Col>
+
                 </Row>
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={24}>
+          <Col span={12}>
+              <Form.Item label="Name">
+                {getFieldDecorator("name", {
+                  rules: [
+                    { required: true, message: "Please Add a Name !" }
+                  ]
+                })(
+                  <Input placeholder="Enter a Name ">
+                  </Input>
+                )}
+              </Form.Item>
+            </Col>
             <Col span={12}>
               <Form.Item label="Subject">
                 {getFieldDecorator("subject", {
@@ -192,36 +182,34 @@ class QuesionForm extends React.Component<Props, State> {
                     { required: true, message: "Please select your Topic!" }
                   ]
                 })(
-                  <Select placeholder="Select a topic">
-                    {topics.map(topic => (
-                      <Option value={topic.key}>{topic.value}</Option>
-                    ))}
-                  </Select>
+                  <Input placeholder="Enter a topic">
+                  </Input>
                 )}
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={24}>
             <Col span={12}>
-              {formItems}
-              <Form.Item {...formItemLayoutWithOutLabel}>
-                <Button
-                  type="dashed"
-                  onClick={this.add}
-                  style={{ width: "60%" }}
-                >
-                  <Icon type="plus" /> Add Question
-                </Button>
+              <Form.Item label="Upload Paper">
+                {
+                  getFieldDecorator("file", {
+                    rules: [{ required: true, message: "Please Upload your File!" }]
+                  })(<Upload {...props}>
+                    <Button>
+                      <Icon type="upload" /> Click to Upload
+                    </Button>
+                  </Upload>
+                  )}
               </Form.Item>
             </Col>
+
           </Row>
         </Form>
         <ViewQuestions
-          questionList={this.props.form.getFieldValue("questionList")}
-          subject={this.props.form.getFieldValue("subject")}
+          subject={getFieldValue('subject')}
+          url={this.state.url}
           hideDrawer={this.hideDrawer}
           showDrawer={this.state.isDrawerVisible}
-        />
+          fileName={this.state.fileName}>
+        </ViewQuestions>
       </>
     );
   }
