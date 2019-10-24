@@ -23,6 +23,15 @@ class FireBaseAdapter implements IFireBaseAdapter {
     };
     this.firestore = firebase.firestore();
   }
+  
+  getFireStore(){
+      return this.firestore;
+  }
+
+  getAuth(){
+    return this.firebaseAppAuth;
+  }
+  
 }
 
 export default new FireBaseAdapter(firebaseConfig);

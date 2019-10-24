@@ -122,7 +122,7 @@ class DashBoard extends React.Component<Props, State> {
 
   showNavigation = () => {
     const { email } = this.context;
-    return ["rkkarma1044@gmail.com", "dubey.aditya092@gmail.com"].includes(
+    return ["rkarma1044@gmail.com", "dubey.aditya092@gmail.com"].includes(
       email
     )
       ? this.renderAdminNavigation()

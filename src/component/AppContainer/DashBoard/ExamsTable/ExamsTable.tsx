@@ -5,7 +5,7 @@ import { Table, Divider } from "antd";
 import "./ExamsTable.scss";
 
 
-import FirebaseAdapter from "../../../../firebase/FirebaseAuthAdapter";
+import api from "../../../../services";
 
 const { Column } = Table;
 
@@ -30,27 +30,20 @@ export default class ExamsTable extends React.Component<Props, State> {
   }
 
   componentWillMount() {
-    //fetch data from firebase
     const that = this;
-    const db = FirebaseAdapter.firestore;
-    let exams: any = [];
-    db.collection("exams").get().then((querySnapshot: any) => {
-      querySnapshot.forEach((doc: any) => {
-        const exam = { key: doc.id, ...doc.data() }
-        exams.push(exam);
-        console.log(exams);
-        that.setState({ exams })
-      });
+    api.get("exams").then((exams: []) => {
+      that.setState({ exams });
+    }).catch((err: any) => {
+      console.log(err);
     });
-
   }
 
-  viewQuestions = ()=> {
-   // add code to view questions
+  viewQuestions = () => {
+    // add code to view questions
   }
 
   render() {
-    const {viewQuestions} = this;
+    const { viewQuestions } = this;
     return (
       <Table dataSource={this.state.exams}>
         <Column title="Exam Name" dataIndex="name" key="name" />
