@@ -1,16 +1,19 @@
 import * as React from "react";
+import {withRouter, RouteComponentProps } from "react-router-dom";
 
-import { Form, Select, Input, Button, Icon, Row, Col, Upload, message } from "antd";
+import { Form, Select, Input, Button, Icon, Upload, message } from "antd";
 
 
 import api from "../../../../services";
 
 import ViewQuestions from "../ViewQuestions";
 
+import { Exam } from "../../../../models/exam.model";
+
 import "./QuesionForm.scss";
 
 const { Option } = Select;
-export interface Props {
+export interface Props extends RouteComponentProps {
   children?: React.ReactNode;
   form: any;
 }
@@ -24,8 +27,6 @@ export interface State {
   fileName: string;
 }
 
-let id = 0;
-
 class QuesionForm extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -36,53 +37,45 @@ class QuesionForm extends React.Component<Props, State> {
       questionList: [],
       subject: "",
       url: "",
-      fileName:""
+      fileName: ""
     };
   }
 
   componentDidMount() {
-    // TODO : Add fetch to get the list of topics from firebase
+    // TODO : Fetch Data for specific user has questions assigned
+  }
+
+  successCallback = (data: any) => {
+    console.log(data);
+    message.success("Operation Success !");
+    message.loading("Loading Exams....");
+    this.props.history.push("/myExam");
+  }
+
+  errorCallback = (error: any) => {
+    console.log(error);
+    message.error("Operation Failed !");
   }
 
   handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    const  {successCallback, errorCallback } = this;
+    const {url} = this.state;
     this.props.form.validateFields((err: any, values: any) => {
       if (!err) {
-        console.log("Received values of form: ", values);
-        api.add(values)
-        // Push values to firebase
+        if(url){
+          const examData = {...values, url} 
+          api.add("exams", new Exam(examData).serialize())
+          .then(successCallback)
+          .catch(errorCallback);
+        }
+        else {
+          message.loading("Please wait generating File Url...");
+        }
       }
     });
   };
 
-  remove = (k: any) => {
-    const { form } = this.props;
-    // can use data-binding to get
-    const keys = form.getFieldValue("keys");
-    // We need at least one passenger
-    if (keys.length === 1) {
-      return;
-    }
-
-    // can use data-binding to set
-    form.setFieldsValue({
-      keys: keys.filter((key: any) => key !== k)
-    });
-  };
-
-  add = () => {
-    const { form } = this.props;
-    // can use data-binding to get
-    const keys = form.getFieldValue("keys");
-    // const questionList = form.getFieldValue("questionList");
-    // this.setState({questionList});
-    const nextKeys = keys.concat(id++);
-    // can use data-binding to set
-    // important! notify form to detect changes
-    form.setFieldsValue({
-      keys: nextKeys
-    });
-  };
 
   showDrawer = () => {
     this.props.form.validateFields((err: any, values: any) => {
@@ -113,7 +106,7 @@ class QuesionForm extends React.Component<Props, State> {
         if (info.file.status === 'done') {
           message.success(`${info.file.name} file uploaded successfully`);
           api.upload(info.file.originFileObj).then((url) => {
-            that.setState({ url,fileName: info.file.name });
+            that.setState({ url, fileName: info.file.name });
           })
         } else if (info.file.status === 'error') {
           message.error(`${info.file.name} file upload failed.`);
@@ -124,31 +117,11 @@ class QuesionForm extends React.Component<Props, State> {
     return (
       <>
         <Form
+          layout="vertical" 
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 12 }}
           onSubmit={this.handleSubmit}
         >
-          <Row gutter={24}>
-            <Col span={24}>
-              <Form.Item  wrapperCol={{ span: 6 ,offset: 18 }}>
-                <Row gutter={24}>
-                  <Col span={8}>
-                    <Button type="primary" onClick={this.showDrawer}>
-                      Preview
-                    </Button>
-                  </Col>
-                  <Col span={8}>
-                    <Button type="primary" htmlType="submit">
-                      Submit
-                    </Button>
-                  </Col>
-
-                </Row>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={24}>
-          <Col span={12}>
               <Form.Item label="Name">
                 {getFieldDecorator("name", {
                   rules: [
@@ -159,8 +132,6 @@ class QuesionForm extends React.Component<Props, State> {
                   </Input>
                 )}
               </Form.Item>
-            </Col>
-            <Col span={12}>
               <Form.Item label="Subject">
                 {getFieldDecorator("subject", {
                   rules: [
@@ -174,8 +145,6 @@ class QuesionForm extends React.Component<Props, State> {
                   </Select>
                 )}
               </Form.Item>
-            </Col>
-            <Col span={12}>
               <Form.Item label="Topic">
                 {getFieldDecorator("topic", {
                   rules: [
@@ -186,8 +155,6 @@ class QuesionForm extends React.Component<Props, State> {
                   </Input>
                 )}
               </Form.Item>
-            </Col>
-            <Col span={12}>
               <Form.Item label="Upload Paper">
                 {
                   getFieldDecorator("file", {
@@ -199,9 +166,14 @@ class QuesionForm extends React.Component<Props, State> {
                   </Upload>
                   )}
               </Form.Item>
-            </Col>
-
-          </Row>
+              <Form.Item >
+                    {/* <Button type="primary" onClick={this.showDrawer}>
+                      Preview
+                    </Button> */}
+                    <Button type="primary" htmlType="submit">
+                      Submit
+                    </Button>
+              </Form.Item>
         </Form>
         <ViewQuestions
           subject={getFieldValue('subject')}
@@ -215,4 +187,6 @@ class QuesionForm extends React.Component<Props, State> {
   }
 }
 
-export default Form.create({ name: "coordinated" })(QuesionForm);
+const formWithRoute = withRouter(QuesionForm);
+
+export default Form.create({ name: "coordinated" })(formWithRoute); 

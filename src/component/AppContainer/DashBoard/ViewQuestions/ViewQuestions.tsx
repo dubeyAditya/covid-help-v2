@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Drawer } from "antd";
+import { Modal } from "antd";
 /** Stylesheet Imports */
 import "./ViewQuestions.scss";
 
@@ -45,17 +45,15 @@ const ViewQuestions: React.FC<Props> = ({
 
   return (
     <div>
-      <Drawer
-        width={window.innerWidth / 2}
-        title="Questions Preview"
-        placement="right"
-        closable={false}
-        onClose={hideDrawer}
+      <Modal
+        title={subject}
         visible={showDrawer}
+        onOk={hideDrawer}
+        onCancel={hideDrawer}
+        width = {window.innerWidth * 0.8 }
       >
-        <h1>{subject}</h1>
         {previewFile()}
-      </Drawer>
+      </Modal>
     </div>
   );
 };

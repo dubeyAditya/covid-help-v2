@@ -1,18 +1,19 @@
 import * as React from "react";
 import { QuesionForm, ExamsTable } from ".";
 import "./DashBoard.scss";
-import { Layout, Menu, Breadcrumb, Icon } from "antd";
+import { Layout, Menu, Breadcrumb, Icon, Divider, Avatar, Dropdown } from "antd";
 import { Link, Route, withRouter, RouteComponentProps } from "react-router-dom";
 import StudentsTable from "./StudentsTable";
 import UserContext from "../../../store/userContext";
 const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 export interface Props extends RouteComponentProps {
   children?: React.ReactNode;
+  signOut:any;
 }
 
-export interface State {}
+export interface State { }
 
 class DashBoard extends React.Component<Props, State> {
   static contextType = UserContext;
@@ -25,6 +26,7 @@ class DashBoard extends React.Component<Props, State> {
 
   componentDidMount() {
     this.props.history.push("/myExam");
+    console.log("Context", this.context);
   }
 
   renderAdminNavigation = () => {
@@ -63,7 +65,6 @@ class DashBoard extends React.Component<Props, State> {
           <Menu.Item key="2">
             <Link to="/myExam">My Exams</Link>
           </Menu.Item>
-          <Menu.Item key="3">All Exams</Menu.Item>
         </SubMenu>
         <SubMenu
           key="sub3"
@@ -121,64 +122,83 @@ class DashBoard extends React.Component<Props, State> {
   };
 
   showNavigation = () => {
+    // TODO : Add uid verification insted of email
     const { email } = this.context;
-    return ["rkarma1044@gmail.com", "dubey.aditya092@gmail.com","mayank.dubey726@gmail.com"].includes(
+    return ["rkarma1044@gmail.com", "dubey.aditya092@gmail.com", "mayank.dubey726@gmail.com"].includes(
       email
     )
       ? this.renderAdminNavigation()
       : this.renderStudentMenu();
   };
 
+
+ menu = () => {
+   
+  return( <Menu>
+    <Menu.Item key="1">
+      <Icon onClick={this.props.signOut} type="poweroff" />
+      Logout 
+    </Menu.Item>
+  </Menu>)
+ };
+  
+
   render() {
     const { showNavigation } = this;
-    const { displayName } = this.context;
+    const { displayName, photoURL } = this.context;
     return (
-      //   <div className="dashboard-wrapper">
       <Layout>
-        <Header className="header">
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            defaultSelectedKeys={["1"]}
-            style={{ lineHeight: "64px" }}
+        <Sider breakpoint="lg"
+          collapsedWidth="0"
+          onBreakpoint={broken => {
+            console.log(broken);
+          }}
+          onCollapse={(collapsed, type) => {
+            console.log(collapsed, type);
+          }} style={{ background: "#fff" }}>
+          <div className="logo">
+            <img width="180px" height="75px" src="/Newton Logo.png" alt="" />
+          </div>
+          {showNavigation()}
+        </Sider>
+        <Layout
+          className="display-container"
+          style={{ minHeight: "100%", padding: "0 24px 24px" }}
+        >
+          <div className="flex-center-all navigation-header">
+            <div>
+              <Breadcrumb style={{ margin: "16px 0" }}>
+                <Breadcrumb.Item>Home</Breadcrumb.Item>
+                <Breadcrumb.Item>Exams</Breadcrumb.Item>
+                <Breadcrumb.Item>My Exams</Breadcrumb.Item>
+              </Breadcrumb>
+            </div>
+            <div>
+              {displayName} 
+              <Divider type="vertical" />
+              <Dropdown overlay={this.menu()}>
+              <Avatar src={photoURL}></Avatar>
+              </Dropdown>
+              {/* <Divider type="vertical"></Divider> */}
+              {/* <Icon type="bell" /> */}
+            </div>
+          </div>
+          <Content
+            style={{
+              background: "#fff",
+              padding: 24,
+              margin: 0,
+              minHeight: 280,
+              height: "100%",
+              overflowY: "auto"
+            }}
           >
-            <Menu.Item key="1">Newton Academy</Menu.Item>
-            <Menu.Item key="2" disabled={true}>
-              Hi! {displayName}
-            </Menu.Item>
-          </Menu>
-        </Header>
-        <Layout>
-          <Sider width={200} style={{ background: "#fff" }}>
-            {showNavigation()}
-          </Sider>
-          <Layout
-            className="display-container"
-            style={{ minHeight: "100%", padding: "0 24px 24px" }}
-          >
-            <Breadcrumb style={{ margin: "16px 0" }}>
-              <Breadcrumb.Item>Home</Breadcrumb.Item>
-              <Breadcrumb.Item>Exams</Breadcrumb.Item>
-              <Breadcrumb.Item>My Exams</Breadcrumb.Item>
-            </Breadcrumb>
-            <Content
-              style={{
-                background: "#fff",
-                padding: 24,
-                margin: 0,
-                minHeight: 280,
-                height: "100%",
-                overflowY: "auto"
-              }}
-            >
-              <Route path="/students" component={StudentsTable}></Route>
-              <Route path="/myExam" component={ExamsTable}></Route>
-              <Route path="/addExam" component={QuesionForm}></Route>
-            </Content>
-          </Layout>
+            <Route path="/students" component={StudentsTable}></Route>
+            <Route path="/myExam" component={ExamsTable}></Route>
+            <Route path="/addExam" component={QuesionForm}></Route>
+          </Content>
         </Layout>
       </Layout>
-      //   </div>
     );
   }
 }

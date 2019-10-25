@@ -1,4 +1,5 @@
 import FireBase from "../firebase/FirebaseAuthAdapter";
+import {IExam} from "../models/exam.model";
 const db = FireBase.getFireStore();
 const storage =  FireBase.getStorage();
 const service = {
@@ -12,19 +13,20 @@ const service = {
         return exams;
     },
 
-    add: function (data:any) {
-
+    add: async function (collectionName:string , data:IExam) {
+      return await db.collection(collectionName).add(data); 
     },
 
-    remove: function () {
-
+    remove: async function (collectionName:string, docId: string ) {
+       return await db.collection(collectionName).doc(docId).delete(); 
     },
 
-    update: function () {
-
+    update: async function (collectionName:string , docId: string , data:IExam) {
+        const docRef = db.collection(collectionName).doc(docId);
+        return await docRef.update(data);
     },
 
-    upload: async function (file: any) {
+    upload: async function (file: File) {
         const metadata = { contentType: file.type};
         await storage.ref().child(file.name).put(file, metadata);
         return await storage.ref().child(file.name).getDownloadURL();

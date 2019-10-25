@@ -23,11 +23,13 @@ const App = ({ user, signOut, signInWithGoogle }: any) => {
     }, 2000);
   }, []);
 
+ const logOut = () => (signOut());
+
   const getContent = () => {
     return (
       <UserContext.Provider value={user}>
         {" "}
-        <AppContainer />
+        <AppContainer signOut={logOut}/>
       </UserContext.Provider>
     );
   };
