@@ -26,42 +26,36 @@ const App = ({ signInWithGoogle, signOut, user }: any) => {
 
   const appContextValue = new ApplicationContext();
 
+  appContextValue.setAdmin(true);
   appContextValue.setViewAcess(true);
 
-
   useEffect(() => {
-    if (user)
-    {
+    if (user) {
       setLoading(true);
-       new Promise((resolve, reject) => {
-        if (!loading) {
-          resolve(auth.currentUser);
-        }
-        const unsubscribe = auth.onAuthStateChanged((user: any) => {
-          api.get("admins").then((admins) => {
-            setLoading(false)
-            admins.forEach((admin: any) => {
-              if (admin.uid === user.uid)
-                appContextValue.setAdmin(true);
-              // TODO : Add Where clause fetch user details
-              //   api.get("users").then((users) => {
-              //   users.forEach((usr: any) => {
-              //     if (user.uid === usr.uid && usr.enabled) {
-              //       appContextValue.setViewAcess(true);
-              //     }
-              //   });
-              //   resolve();
-              // });
+      const unsubscribe = auth.onAuthStateChanged((user: any) => {
+        api.get("admins").then((admins) => {
+          setLoading(false)
+          admins.forEach((admin: any) => {
+            if (admin.uid === user.uid)
+              console.log(admin);
+            //  setAdmin(true);
+              api.get("users").then((users) => {
+              users.forEach((usr: any) => {
+                if (user.uid === usr.uid && usr.enabled) {
+                  // setViewAcess(true);
+                  console.log(usr);
+                }
+              });
             });
           });
-          unsubscribe();
-        }, reject);
+        });
+        unsubscribe();
       });
     }
     else {
       setTimeout(() => setLoading(false), 1000);
     }
-  },[]);
+  }, [user]);
 
 
   const loadAppContent = () => {
