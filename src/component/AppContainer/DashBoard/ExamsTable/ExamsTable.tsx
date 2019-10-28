@@ -32,11 +32,6 @@ const ExamsTable = () => {
   }, []);
 
   const preview = (record: any) => () => {
-    const current = {
-      subject: record.subject,
-      url: record.url,
-      fileName: record.file.fileName
-    }
     window.open(record.url);
   }
 

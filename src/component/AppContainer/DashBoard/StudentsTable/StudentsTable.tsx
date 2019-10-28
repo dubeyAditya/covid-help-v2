@@ -4,7 +4,7 @@ import api from "../../../../services";
 /** Stylesheet Imports */
 import "./StudentsTable.scss";
 
-import { Table, message, Icon } from "antd";
+import { Table, message } from "antd";
 
 import  CustomSwitch from "./Switch";
 
@@ -51,7 +51,7 @@ const StudentsTable = () => {
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  });
 
   return (
     <Table dataSource={users}>
