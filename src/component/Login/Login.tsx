@@ -9,7 +9,6 @@ import { Button } from "antd";
 
 export interface Props {
   signinWithGoogle: any;
-  signOut: any;
 }
 
 const Login = ({ signInWithGoogle }: any) => {

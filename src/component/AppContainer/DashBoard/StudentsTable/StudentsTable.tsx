@@ -1,64 +1,67 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 
+import api from "../../../../services";
 /** Stylesheet Imports */
 import "./StudentsTable.scss";
 
-import { Table, Divider, Tag } from "antd";
+import { Table, message, Icon } from "antd";
 
-import json from "../../../../store/students";
+import  CustomSwitch from "./Switch";
 
-const { Column, ColumnGroup } = Table;
+const { Column } = Table;
 
-const { students } = json;
 
-export interface Props {
-  children?: React.ReactNode;
-}
+const StudentsTable = () => {
 
-export interface State {}
+  const [users, setUsers] = useState([]);
 
-export default class StudentsTable extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
+  const [isLoading, setIsLoading] = useState(false);
 
-    this.state = {};
+  const successCallback = (users: any) => {
+    setUsers(users);
   }
 
-  render() {
-    return (
-      <Table dataSource={students}>
-        <ColumnGroup title="Name">
-          <Column title="First Name" dataIndex="firstName" key="firstName" />
-          <Column title="Last Name" dataIndex="lastName" key="lastName" />
-        </ColumnGroup>
-        <Column title="Class" dataIndex="class" key="class" />
-        <Column
-          title="Medium"
-          dataIndex="medium"
-          key="medium"
-          render={tags => (
-            <span>
-              {tags.map((tag: any) => (
-                <Tag color="blue" key={tag}>
-                  {tag}
-                </Tag>
-              ))}
-            </span>
-          )}
-        />
-        <Column title="Address" dataIndex="address" key="address" />
-        <Column
-          title="Action"
-          key="action"
-          render={(text, record: any) => (
-            <span>
-              <a href="/students">View {record.firstName}</a>
-              <Divider type="vertical" />
-              <a href="/students"> Delete</a>
-            </span>
-          )}
-        />
-      </Table>
-    );
+  const errorCallBack = (err: any) => {
+    console.error(err);
+    message.error("Please Try After Sometime !");
   }
+
+
+  const loadUsers = async() => {
+   await api.get("users")
+      .then(successCallback)
+      .catch(errorCallBack);
+  }
+
+  const changeAccess = (record: any) => (currentAccess:boolean) => {
+    record.enabled = currentAccess;
+    setIsLoading(true);
+    api.update("users", record.key, record)
+    .then(()=>{
+      setIsLoading(false);
+      message.success(`Exams are ${currentAccess? 'Enabled' : 'Disabled'} for ${record.name}`);
+
+    }).catch((err:any)=>{
+      setIsLoading(false);
+       record.enabled = currentAccess;
+       message.error("Unable to Change Permission !");
+       console.error(err);
+    });
+  }
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  return (
+    <Table dataSource={users}>
+      <Column title="Name" dataIndex="name" key="name" />
+      <Column title="Access" dataIndex="enabled" key="enabled"
+        render={(text, record: any) => (
+          <CustomSwitch enabled={record.enabled} isLoading={isLoading} changeAccess={changeAccess(record)}></CustomSwitch>
+        )} />
+    </Table>
+  );
 }
+
+export default StudentsTable;

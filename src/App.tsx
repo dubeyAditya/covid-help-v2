@@ -11,31 +11,72 @@ import withFirebaseAuth from "react-with-firebase-auth"; // authorization
 
 import firebaseAdapter from "./firebase/FirebaseAuthAdapter";
 
-import UserContext from "./store/userContext";
+import api from "./services";
 
-const App = ({ user, signOut, signInWithGoogle }: any) => {
+import { AuthContext, appContext as AppContext, ApplicationContext } from "./store";
+
+const auth = firebaseAdapter.getAuth();
+
+
+const App = ({ signInWithGoogle, signOut, user }: any) => {
+
   const [loading, setLoading] = useState(true);
 
+  const authContextValue = { signOut, user };
+
+  const appContextValue = new ApplicationContext();
+
+  appContextValue.setViewAcess(true);
+  const getCurrentUser = (auth: any) => {
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      if (!loading) {
+        resolve(auth.currentUser);
+      }
+      const unsubscribe = auth.onAuthStateChanged((user: any) => {
+        api.get("admins").then((admins) => {
+          setLoading(false)
+          admins.forEach((admin: any) => {
+            if (admin.uid === user.uid)
+              appContextValue.setAdmin(true);
+            // TODO : Add Where clause fetch user details
+            //   api.get("users").then((users) => {
+            //   users.forEach((usr: any) => {
+            //     if (user.uid === usr.uid && usr.enabled) {
+            //       appContextValue.setViewAcess(true);
+            //     }
+            //   });
+            //   resolve();
+            // });
+          });
+        });
+        unsubscribe();
+      }, reject);
+    });
+  }
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+    //  TODO : Load Prerequisite here.
+    if (user)
+      getCurrentUser(auth);
+    else {
+      setTimeout(() => setLoading(false), 1000);
+    }
   }, []);
 
- const logOut = () => (signOut());
 
-  const getContent = () => {
+  const loadAppContent = () => {
     return (
-      <UserContext.Provider value={user}>
-        {" "}
-        <AppContainer signOut={logOut}/>
-      </UserContext.Provider>
+      <AppContext.Provider value={appContextValue}>
+        <AuthContext.Provider value={authContextValue}>
+          <AppContainer />
+        </AuthContext.Provider>
+      </AppContext.Provider>
     );
   };
 
   const authenticateUser = () => {
-    return !user ? <Login signInWithGoogle={signInWithGoogle} /> : getContent();
+    return !user ? <Login signInWithGoogle={signInWithGoogle} /> : loadAppContent();
   };
 
   return (
