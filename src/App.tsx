@@ -15,52 +15,66 @@ import api from "./services";
 
 import { AuthContext, appContext as AppContext, ApplicationContext } from "./store";
 
-const auth = firebaseAdapter.getAuth();
+// const auth = firebaseAdapter.getAuth();
 
 
 const App = ({ signInWithGoogle, signOut, user }: any) => {
 
-  const [loading, setLoading] = useState(true);
+  const [appState, setAppState] = useState(new ApplicationContext());
 
   const authContextValue = { signOut, user };
 
-  const appContextValue = new ApplicationContext();
-
-  appContextValue.setAdmin(true);
-  appContextValue.setViewAcess(true);
 
   useEffect(() => {
     if (user) {
-      setLoading(true);
-      const unsubscribe = auth.onAuthStateChanged((user: any) => {
-        api.get("admins").then((admins) => {
-          setLoading(false)
-          admins.forEach((admin: any) => {
-            if (admin.uid === user.uid)
-              console.log(admin);
-            //  setAdmin(true);
-              api.get("users").then((users) => {
-              users.forEach((usr: any) => {
-                if (user.uid === usr.uid && usr.enabled) {
-                  // setViewAcess(true);
-                  console.log(usr);
-                }
-              });
-            });
-          });
-        });
-        unsubscribe();
+      setAuthAsync();
+    }
+    if(!user && appState.loading){
+      setTimeout(()=>setAppState({ ...appState,loading: false }),1000);
+    }
+    // eslint-disable-next-line
+  }, [user]);
+
+
+  const setAuthAsync = async () => {
+    setAppState({ ...appState, loading:true });
+    const admins = await api.find("admins",'uid','==', user.uid);
+    const users = await api.find("users",'uid', '==', user.uid);
+    if(admins.size){
+      setAppState({ isAdmin: true, hasViewAccess: true, isGuest: false,loading:false });
+    }
+    else if(users.size){
+      users.forEach((doc: any) => {
+        if (doc.data().enabled) 
+          setAppState({ isAdmin: false, hasViewAccess: true, isGuest: false,loading:false });
       });
     }
-    else {
-      setTimeout(() => setLoading(false), 1000);
-    }
-  }, [user]);
+    else setAppState({ ...appState,loading:false})
+  }
+
+  // const setAuth = () => {
+  //   setLoading(true);
+  //   return api.get("admins").then((admins) => {
+  //     admins.forEach((admin: any) => {
+  //       if (admin.uid === user.uid)
+  //         setAppState({ isAdmin: true, hasViewAccess: true, isGuest: false });
+  //       else {
+  //         api.get("users").then((users) => {
+  //           users.forEach((usr: any) => {
+  //             if (user.uid === usr.uid && usr.enabled) 
+  //               setAppState({ isAdmin: false, hasViewAccess: true, isGuest: false });
+  //           });
+  //         });
+  //       }
+  //     });
+  //     setLoading(false);
+  //   });
+  // }
 
 
   const loadAppContent = () => {
     return (
-      <AppContext.Provider value={appContextValue}>
+      <AppContext.Provider value={appState}>
         <AuthContext.Provider value={authContextValue}>
           <AppContainer />
         </AuthContext.Provider>
@@ -69,12 +83,12 @@ const App = ({ signInWithGoogle, signOut, user }: any) => {
   };
 
   const authenticateUser = () => {
-    return !user ? <Login signInWithGoogle={signInWithGoogle} /> : loadAppContent();
+    return  !user ? <Login signInWithGoogle={signInWithGoogle} /> : loadAppContent();
   };
 
   return (
     <div className="application-wrapper">
-      {loading ? <Loading /> : authenticateUser()}
+      {appState.loading ? <Loading></Loading> : authenticateUser()}
     </div>
   );
 };

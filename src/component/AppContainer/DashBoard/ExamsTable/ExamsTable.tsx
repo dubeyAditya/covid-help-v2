@@ -8,7 +8,6 @@ import "./ExamsTable.scss";
 import api from "../../../../services";
 
 import { appContext } from "../../../../store";
-import { RegistrationForm } from "..";
 
 
 const { Column } = Table;
@@ -20,7 +19,7 @@ const ExamsTable = () => {
 
   const [isReady, setIsReady] = useState(false);
 
-  const { isAdmin, hasViewAccess } = useContext(appContext);
+  const { isAdmin } = useContext(appContext);
 
   useEffect(() => {
     api.get("exams").then((exams: []) => {
@@ -62,27 +61,25 @@ const ExamsTable = () => {
   return (
     <>
       {
-        hasViewAccess
-          ? isReady
-            ? (
-              <Table dataSource={exams}>
-                <Column title="Exam Name" dataIndex="name" key="name" />
-                <Column title="Subject" dataIndex="subject" key="subject" />
-                <Column title="Topic" dataIndex="topic" key="topic" />
-                <Column
-                  title="Action"
-                  key="action"
-                  render={(text, record: any) => (
-                    <span>
-                      <Button type="link" onClick={preview(record)}> <Icon type="eye" /></Button>
-                      {getDeleteBtn(record)}
-                    </span>
-                  )}
-                />
-              </Table>
-            )
-            : <Skeleton active />
-          : <RegistrationForm></RegistrationForm>
+        isReady
+          ? (
+            <Table dataSource={exams}>
+              <Column title="Exam Name" dataIndex="name" key="name" />
+              <Column title="Subject" dataIndex="subject" key="subject" />
+              <Column title="Topic" dataIndex="topic" key="topic" />
+              <Column
+                title="Action"
+                key="action"
+                render={(text, record: any) => (
+                  <span>
+                    <Button type="link" onClick={preview(record)}> <Icon type="eye" /></Button>
+                    {getDeleteBtn(record)}
+                  </span>
+                )}
+              />
+            </Table>
+          )
+          : <Skeleton active />
       }
     </>
   );

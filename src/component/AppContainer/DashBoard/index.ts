@@ -6,3 +6,4 @@ export { default as ViewQuestions } from "./ViewQuestions";
 export { default as NavigationMenu } from "./NavigationMenu";
 export { default as NavigationHeader } from "./NavigationHeader";
 export { default as RegistrationForm } from "./RegistrationForm";
+export { default as Profile } from "./Profile";

@@ -51,7 +51,8 @@ const StudentsTable = () => {
 
   useEffect(() => {
     loadUsers();
-  });
+    // eslint-disable-next-line
+  },[]);
 
   return (
     <Table dataSource={users}>

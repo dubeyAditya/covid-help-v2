@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { QuesionForm, ExamsTable, NavigationMenu, StudentsTable, NavigationHeader, RegistrationForm } from ".";
+import { QuesionForm, ExamsTable, NavigationMenu, StudentsTable, NavigationHeader, Profile } from ".";
 import { Layout } from "antd";
 import { Route, withRouter, RouteComponentProps } from "react-router-dom";
 
@@ -17,16 +17,12 @@ const DashBoard: React.FC<Props> = ({ history }) => {
 
   const app = useContext(appContext);
 
+  const route =  (app.isAdmin || app.hasViewAccess) ? "myExam" : "/myProfile";
+
   useEffect(() => {
-    history.push("/myExam");
-  }, [history]);
+    history.push(route);
+  }, [history ,route]);
 
-
-
-
-  const checkAccess = () => {
-    return app.hasViewAccess || app.isAdmin ? <ExamsTable /> : <RegistrationForm />
-  }
 
 
   return (
@@ -54,8 +50,9 @@ const DashBoard: React.FC<Props> = ({ history }) => {
           }}
         >
           <Route path="/students" component={StudentsTable}></Route>
-          <Route path="/myExam" render={checkAccess}></Route>
+          <Route path="/myExam" component={ExamsTable}></Route>
           <Route path="/addExam" component={QuesionForm}></Route>
+          <Route path="/myProfile" component={Profile}></Route>
         </Content>
       </Layout>
     </Layout>

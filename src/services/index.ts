@@ -30,6 +30,10 @@ const service = {
         const metadata = { contentType: file.type};
         await storage.ref().child(file.name).put(file, metadata);
         return await storage.ref().child(file.name).getDownloadURL();
+    },
+
+    find: async function(collectionName:string, key:string, op:string , val:any) {
+      return await db.collection(collectionName).where(key,op,val).get();
     }
 };
 export default service;

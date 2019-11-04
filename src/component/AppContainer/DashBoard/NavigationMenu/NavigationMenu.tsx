@@ -1,104 +1,142 @@
-import React from "react";
-import {Menu,Icon} from 'antd';
+import React, { useContext } from "react";
+import { Menu, Icon } from 'antd';
 import { Link } from "react-router-dom";
-const {SubMenu} =  Menu;
+import { appContext } from "../../../../store";
+const { SubMenu } = Menu;
 
 const AdminNavigation = () => {
-    return (
-      <Menu
-        mode="inline"
-        defaultSelectedKeys={["2"]}
-        defaultOpenKeys={["sub2"]}
-        style={{ height: "100%", borderRight: 0 }}
+  return (
+    <Menu
+      mode="inline"
+      defaultSelectedKeys={["2"]}
+      defaultOpenKeys={["sub2"]}
+      style={{ height: "100%", borderRight: 0 }}
+    >
+      <SubMenu
+        key="sub1"
+        title={
+          <span>
+            <Icon type="user" />
+            Students
+            </span>
+        }
       >
-        <SubMenu
-          key="sub1"
-          title={
-            <span>
-              <Icon type="user" />
-              Students
+        <Menu.Item key="1">
+          <Link to="/students">Students Details</Link>
+        </Menu.Item>
+      </SubMenu>
+      <SubMenu
+        key="sub2"
+        title={
+          <span>
+            <Icon type="laptop" />
+            Exams
             </span>
-          }
-        >
-          <Menu.Item key="1">
-            <Link to="/students">Students Details</Link>
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu
-          key="sub2"
-          title={
-            <span>
-              <Icon type="laptop" />
-              Exams
+        }
+      >
+        <Menu.Item key="1">
+          <Link to="/addExam"> Add Exam </Link>
+        </Menu.Item>
+        <Menu.Item key="2">
+          <Link to="/myExam">My Exams</Link>
+        </Menu.Item>
+      </SubMenu>
+      <SubMenu
+        key="sub3"
+        title={
+          <span>
+            <Icon type="notification" />
+            Announcements
             </span>
-          }
-        >
-          <Menu.Item key="1">
-            <Link to="/addExam"> Add Exam </Link>
-          </Menu.Item>
-          <Menu.Item key="2">
-            <Link to="/myExam">My Exams</Link>
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu
-          key="sub3"
-          title={
-            <span>
-              <Icon type="notification" />
-              Announcements
-            </span>
-          }
-        >
-          <Menu.Item key="9">Holidays</Menu.Item>
-          <Menu.Item key="10">New Batches</Menu.Item>
-          <Menu.Item key="11">Extra Classes</Menu.Item>
-        </SubMenu>
-      </Menu>
-    );
+        }
+      >
+        <Menu.Item key="9">Holidays</Menu.Item>
+        <Menu.Item key="10">New Batches</Menu.Item>
+        <Menu.Item key="11">Extra Classes</Menu.Item>
+      </SubMenu>
+    </Menu>
+  );
 };
 
 const StudentNavigation = () => {
-    return (
-      <Menu
-        mode="inline"
-        defaultSelectedKeys={["1"]}
-        defaultOpenKeys={["sub1"]}
-        style={{ height: "100%", borderRight: 0 }}
+  return (
+    <Menu
+      mode="inline"
+      defaultSelectedKeys={["1"]}
+      defaultOpenKeys={["sub1"]}
+      style={{ height: "100%", borderRight: 0 }}
+    >
+      <SubMenu
+        key="sub1"
+        title={
+          <span>
+            <Icon type="laptop" />
+            Exams
+            </span>
+        }
       >
-        <SubMenu
-          key="sub1"
-          title={
-            <span>
-              <Icon type="laptop" />
-              Exams
+        <Menu.Item key="1">
+          <Link to="/myExam">My Exams</Link>
+        </Menu.Item>
+      </SubMenu>
+      <SubMenu
+        key="sub2"
+        title={
+          <span>
+            <Icon type="notification" />
+            Announcements
             </span>
-          }
-        >
-          <Menu.Item key="1">
-            <Link to="/myExam">My Exams</Link>
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu
-          key="sub2"
-          title={
-            <span>
-              <Icon type="notification" />
-              Announcements
-            </span>
-          }
-        >
-          <Menu.Item key="9">Holidays</Menu.Item>
-          <Menu.Item key="10">New Batches</Menu.Item>
-          <Menu.Item key="11">Extra Classes</Menu.Item>
-        </SubMenu>
-      </Menu>
-    );
-  };
+        }
+      >
+        <Menu.Item key="9">Holidays</Menu.Item>
+        <Menu.Item key="10">New Batches</Menu.Item>
+        <Menu.Item key="11">Extra Classes</Menu.Item>
+      </SubMenu>
+    </Menu>
+  );
+};
 
-  const NavigationMenu: React.FC = ()=>{
-    //  const {isAdmin} = useContext(appContext);
-     const isAdmin =  true;
-     return (isAdmin ? <AdminNavigation /> : <StudentNavigation/>)
-  }
+const GuestNavigation = () => {
+  return (
+    <Menu
+      mode="inline"
+      defaultSelectedKeys={["1"]}
+      defaultOpenKeys={["sub1"]}
+      style={{ height: "100%", borderRight: 0 }}
+    >
+      <SubMenu
+        key="sub1"
+        title={
+          <span>
+            <Icon type="user" />
+            Profile
+          </span>
+        }
+      >
+        <Menu.Item key="1">
+          <Link to="/myProfile">My Profile</Link>
+        </Menu.Item>
+      </SubMenu>
+      <SubMenu
+        key="sub2"
+        title={
+          <span>
+            <Icon type="notification" />
+            Announcements
+          </span>
+        }
+      >
+        <Menu.Item key="9">Holidays</Menu.Item>
+        <Menu.Item key="10">New Batches</Menu.Item>
+        <Menu.Item key="11">Extra Classes</Menu.Item>
+      </SubMenu>
+    </Menu>
+  );
+}
 
-  export  default NavigationMenu;
+const NavigationMenu: React.FC = () => {
+  const { isAdmin, hasViewAccess } = useContext(appContext);
+  return (isAdmin ? <AdminNavigation /> : hasViewAccess ? <StudentNavigation /> : <GuestNavigation />)
+}
+
+export default NavigationMenu;
