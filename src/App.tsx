@@ -40,6 +40,7 @@ const App = ({ signInWithGoogle, signOut, user }: any) => {
     setAppState({ ...appState, loading:true });
     const admins = await api.find("admins",'uid','==', user.uid);
     const users = await api.find("users",'uid', '==', user.uid);
+    console.log(users.size,admins.size);
     if(admins.size){
       setAppState({ isAdmin: true, hasViewAccess: true, isGuest: false,loading:false });
     }
@@ -47,6 +48,9 @@ const App = ({ signInWithGoogle, signOut, user }: any) => {
       users.forEach((doc: any) => {
         if (doc.data().enabled) 
           setAppState({ isAdmin: false, hasViewAccess: true, isGuest: false,loading:false });
+        else {
+          setAppState({ isAdmin: false, hasViewAccess: false, isGuest: false, loading:false });
+        }  
       });
     }
     else setAppState({ ...appState,loading:false})

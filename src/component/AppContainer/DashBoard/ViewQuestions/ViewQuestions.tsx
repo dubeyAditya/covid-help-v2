@@ -10,7 +10,6 @@ export interface Props {
   hideDrawer: any;
   url: string;
   fileName: string;
-
 }
 
 const viewStyle = { width: "100%", maxHeight: "80vh" };
@@ -42,7 +41,6 @@ const ViewQuestions: React.FC<Props> = ({
     }
   }
 
-
   return (
     <div>
       <Modal
@@ -57,4 +55,5 @@ const ViewQuestions: React.FC<Props> = ({
     </div>
   );
 };
+
 export default ViewQuestions;

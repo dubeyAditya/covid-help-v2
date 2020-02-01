@@ -1,7 +1,7 @@
-import * as React from "react";
-import {withRouter, RouteComponentProps } from "react-router-dom";
+import React from "react";
+import { withRouter, RouteComponentProps } from "react-router-dom";
 
-import { Form, Select, Input, Button, Icon, Upload, message } from "antd";
+import { Form, Select, Input, Button, Icon, Upload, message, Avatar } from "antd";
 
 
 import api from "../../../../services";
@@ -11,8 +11,10 @@ import ViewQuestions from "../ViewQuestions";
 import { Exam } from "../../../../models/exam.model";
 
 import "./QuesionForm.scss";
+import { Student } from "../../../../models/user.model";
 
 const { Option } = Select;
+
 export interface Props extends RouteComponentProps {
   children?: React.ReactNode;
   form: any;
@@ -21,10 +23,11 @@ export interface Props extends RouteComponentProps {
 export interface State {
   topics: "";
   isDrawerVisible: boolean;
-  questionList: [];
+  studentList: Student[];
   subject: string;
   url: string;
   fileName: string;
+
 }
 
 class QuesionForm extends React.Component<Props, State> {
@@ -34,7 +37,7 @@ class QuesionForm extends React.Component<Props, State> {
     this.state = {
       topics: "",
       isDrawerVisible: false,
-      questionList: [],
+      studentList: [],
       subject: "",
       url: "",
       fileName: ""
@@ -43,6 +46,9 @@ class QuesionForm extends React.Component<Props, State> {
 
   componentDidMount() {
     // TODO : Fetch Data for specific user has questions assigned
+    api.get("users")
+      .then((studentList: Student[]) => this.setState({ studentList }))
+      .catch(err => message.error(err));
   }
 
   successCallback = (data: any) => {
@@ -59,15 +65,15 @@ class QuesionForm extends React.Component<Props, State> {
 
   handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    const  {successCallback, errorCallback } = this;
-    const {url} = this.state;
+    const { successCallback, errorCallback } = this;
+    const { url } = this.state;
     this.props.form.validateFields((err: any, values: any) => {
       if (!err) {
-        if(url){
-          const examData = {...values, url} 
+        if (url) {
+          const examData = { ...values, url }
           api.add("exams", new Exam(examData).serialize())
-          .then(successCallback)
-          .catch(errorCallback);
+            .then(successCallback)
+            .catch(errorCallback);
         }
         else {
           message.loading("Please wait generating File Url...");
@@ -78,20 +84,23 @@ class QuesionForm extends React.Component<Props, State> {
 
 
   showDrawer = () => {
-    this.props.form.validateFields((err: any, values: any) => {
-      if (!err) {
-        this.setState({ isDrawerVisible: true });
-      }
-    });
+    this.setState({ isDrawerVisible: true });
   };
 
   hideDrawer = () => this.setState({ isDrawerVisible: false });
 
+  getStudents = () => {
+    
+    return this.state.studentList.map((student) => (
+      <Option key={student.uid}  value={student.uid} >
+        <Avatar src={student.photoURL}></Avatar> { " " } {student.name} ({student.className})
+      </Option>))
+  }
+
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form;
-    const that = this;;
     getFieldDecorator("keys", { initialValue: [] });
-
+    const that = this;
     const props = {
       name: 'file',
       action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
@@ -117,63 +126,80 @@ class QuesionForm extends React.Component<Props, State> {
     return (
       <>
         <Form
-          layout="vertical" 
+          layout="vertical"
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 12 }}
           onSubmit={this.handleSubmit}
         >
-              <Form.Item label="Name">
-                {getFieldDecorator("name", {
-                  rules: [
-                    { required: true, message: "Please Add a Name !" }
-                  ]
-                })(
-                  <Input placeholder="Enter a Name ">
-                  </Input>
-                )}
-              </Form.Item>
-              <Form.Item label="Subject">
-                {getFieldDecorator("subject", {
-                  rules: [
-                    { required: true, message: "Please select your Subject!" }
-                  ]
-                })(
-                  <Select placeholder="Select a subject">
-                    <Option value="Physics">Physics</Option>
-                    <Option value="Chemistry">Chemistry</Option>
-                    <Option value="Maths">Maths</Option>
-                  </Select>
-                )}
-              </Form.Item>
-              <Form.Item label="Topic">
-                {getFieldDecorator("topic", {
-                  rules: [
-                    { required: true, message: "Please select your Topic!" }
-                  ]
-                })(
-                  <Input placeholder="Enter a topic">
-                  </Input>
-                )}
-              </Form.Item>
-              <Form.Item label="Upload Paper">
-                {
-                  getFieldDecorator("file", {
-                    rules: [{ required: true, message: "Please Upload your File!" }]
-                  })(<Upload {...props}>
-                    <Button>
-                      <Icon type="upload" /> Click to Upload
-                    </Button>
-                  </Upload>
-                  )}
-              </Form.Item>
-              <Form.Item >
-                    {/* <Button type="primary" onClick={this.showDrawer}>
-                      Preview
-                    </Button> */}
-                    <Button type="primary" htmlType="submit">
-                      Submit
-                    </Button>
-              </Form.Item>
+          <Form.Item label="Exam Name">
+            {getFieldDecorator("name", {
+              rules: [
+                { required: true, message: "Please Add a Name !" }
+              ]
+            })(
+              <Input placeholder="Enter Exam Name ">
+              </Input>
+            )}
+          </Form.Item>
+          <Form.Item label="Subject">
+            {getFieldDecorator("subject", {
+              rules: [
+                { required: true, message: "Please select your Subject!" }
+              ]
+            })(
+              <Select placeholder="Select a subject">
+                <Option value="Varg3">Varg-3</Option>
+                <Option value="Physics">Physics</Option>
+                <Option value="Chemistry">Chemistry</Option>
+                <Option value="Maths">Maths</Option>
+                <Option value="Bio">Bio</Option>
+              </Select>
+            )}
+          </Form.Item>
+          <Form.Item label="Topic">
+            {getFieldDecorator("topic", {
+              rules: [
+                { required: true, message: "Please select your Topic!" }
+              ]
+            })(
+              <Input placeholder="Enter a topic">
+              </Input>
+            )}
+          </Form.Item>
+          <Form.Item label="Upload Paper">
+            {
+              getFieldDecorator("file", {
+                rules: [{ required: true, message: "Please Upload your File!" }]
+              })(<Upload {...props}><Button>
+                <Icon type="upload" /> Click to Upload
+                  </Button></Upload>
+              )
+            }
+          </Form.Item>
+          <Form.Item label="Select Students">
+            {
+              getFieldDecorator("visibility", {
+                rules: [{ required: true, message: "Please Select atleast one student!" }]
+              })(
+                <Select
+                  mode="multiple"
+                  size="large"
+                  placeholder="Please select students"
+                  removeIcon={<Icon style={{ fontSize: '16px' }} type="close-circle" theme="twoTone" twoToneColor="#eb2f96"/>}
+                  menuItemSelectedIcon={ <Icon type="check-circle" style={{ fontSize: '16px' }} theme="filled" twoToneColor="#52c41a" />}
+                >
+                  {this.getStudents()}
+                </Select>)
+            }
+            {/* <Button type="primary" onClick={this.showDrawer}>
+              Share With
+            </Button> */}
+          </Form.Item>
+          <Form.Item >
+            <Button  style={{float:'right'}} type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
         </Form>
         <ViewQuestions
           subject={getFieldValue('subject')}

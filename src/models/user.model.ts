@@ -4,19 +4,32 @@ export interface IUser {
     email: string;
     photoURL: string;
     phoneNumber: number;
-    stream: string;
+    course?: string;
+    enabled?: boolean;
 }
 
-export class User implements IUser {
+export class Student implements IUser {
     uid: string = "";
     name: string = "";
     email: string = "";
     photoURL: string = "";
     phoneNumber: number = 0;
-    stream: string = "";
+    course: string = "";
+    className: string = "";
+    enabled?: boolean = false;
 
-    constructor() {
+    constructor({ uid, name, email, photoURL, phoneNumber, course, className} : Student) {
+        this.uid = uid;
+        this.name = name;
+        this.email = email;
+        this.photoURL = photoURL;
+        this.phoneNumber = phoneNumber;
+        this.course = course;
+        this.className = className;
+    }
 
+    serialize() {
+        return JSON.parse(JSON.stringify(this));
     }
 
 }

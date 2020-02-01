@@ -21,13 +21,15 @@ export class Exam implements IExam {
     class: number;
     file: IFileMetaData;
     url: string;
-    constructor({ name, subject, file, topic, className, url }: any) {
+    visibility: string[];
+    constructor({ name, subject, file, topic, className, url, visibility }: any) {
         this.name = name;
         this.subject = subject;
         this.topic = topic;
         this.class = className | 0;
         this.url = url;
         this.file = this.serializeFile(file.file);
+        this.visibility = visibility;
     }
 
     serialize() {

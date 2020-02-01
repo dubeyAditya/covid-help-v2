@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { QuesionForm, ExamsTable, NavigationMenu, StudentsTable, NavigationHeader, Profile } from ".";
-import { Layout } from "antd";
+import { Layout, Empty } from "antd";
 import { Route, withRouter, RouteComponentProps } from "react-router-dom";
 
 import "./DashBoard.scss";
@@ -17,11 +17,11 @@ const DashBoard: React.FC<Props> = ({ history }) => {
 
   const app = useContext(appContext);
 
-  const route =  (app.isAdmin || app.hasViewAccess) ? "myExam" : "/myProfile";
+  const route = (app.isAdmin || app.hasViewAccess) ? "myExam" : "myProfile";
 
   useEffect(() => {
     history.push(route);
-  }, [history ,route]);
+  }, [history, route]);
 
 
 
@@ -53,6 +53,7 @@ const DashBoard: React.FC<Props> = ({ history }) => {
           <Route path="/myExam" component={ExamsTable}></Route>
           <Route path="/addExam" component={QuesionForm}></Route>
           <Route path="/myProfile" component={Profile}></Route>
+          <Route path="/noData" render={() => <Empty></Empty>}></Route>
         </Content>
       </Layout>
     </Layout>

@@ -5,7 +5,7 @@ import * as React from "react";
 import { shallow, ShallowWrapper } from "enzyme";
 
 /** Import Tested Component */
-import StudentsTable from "./StudentsTable";
+import StudentsTable from "./StudentDetails";
 
 describe("<StudentsTable />", () => {
 
