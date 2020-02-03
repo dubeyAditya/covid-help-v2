@@ -139,7 +139,7 @@ class RegistrationForm extends React.Component<Props> {
                             })(<Input addonBefore={prefixSelector} style={{ width: '100%' }} />)}
                         </Form.Item>
 
-                        <Form.Item label="Course">
+                        <Form.Item label="Course Name">
                             {getFieldDecorator('course', {
                                 rules: [{ required: true, message: 'Please Select Course!' }],
                             })(<Select>
@@ -148,15 +148,15 @@ class RegistrationForm extends React.Component<Props> {
                             </Select>)}
                         </Form.Item>
 
-                        <Form.Item label="Class">
+                        <Form.Item label="Batch Name">
                             {getFieldDecorator('className', {
-                                rules: [{ required: false, message: 'Please Select Class!' }],
+                                rules: [{ required: true, message: 'Please Select Batch!' }],
                             })(<Select>
+                                <Option value='Sanvida'> Sanvida </Option>
                                 <Option value='9'> 9<sup>th</sup> </Option>
                                 <Option value='10'> 10<sup>th</sup> </Option>
                                 <Option value='11'> 11<sup>th</sup> </Option>
                                 <Option value='12'> 12<sup>th</sup> </Option>
-                                <Option value='Other'> Other </Option>
                             </Select>)}
                         </Form.Item>
 
