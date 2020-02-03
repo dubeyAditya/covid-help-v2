@@ -40,7 +40,6 @@ const App = ({ signInWithGoogle, signOut, user }: any) => {
     setAppState({ ...appState, loading:true });
     const admins = await api.find("admins",'uid','==', user.uid);
     const users = await api.find("users",'uid', '==', user.uid);
-    console.log(users.size,admins.size);
     if(admins.size){
       setAppState({ isAdmin: true, hasViewAccess: true, isGuest: false,loading:false });
     }
