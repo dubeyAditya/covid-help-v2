@@ -152,7 +152,7 @@ class RegistrationForm extends React.Component<Props> {
                             {getFieldDecorator('className', {
                                 rules: [{ required: true, message: 'Please Select Batch!' }],
                             })(<Select>
-                                <Option value='Sanvida'> Sanvida </Option>
+                                <Option value='Samvida'> Samvida </Option>
                                 <Option value='9'> 9<sup>th</sup> </Option>
                                 <Option value='10'> 10<sup>th</sup> </Option>
                                 <Option value='11'> 11<sup>th</sup> </Option>
