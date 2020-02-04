@@ -21,7 +21,7 @@ export class Student implements IUser {
     constructor({ uid, name, email, photoURL, phoneNumber, course, className} : Student) {
         this.uid = uid;
         this.name = name;
-        this.email = email;
+        this.email = email.toLowerCase();
         this.photoURL = photoURL;
         this.phoneNumber = phoneNumber;
         this.course = course;

@@ -1,2 +1,2 @@
-export  {AuthContext}  from './AuthContext';
-export {appContext,ApplicationContext} from './AppContext';
+export { AuthContext } from './AuthContext';
+export { appContext, ApplicationContext } from './AppContext';

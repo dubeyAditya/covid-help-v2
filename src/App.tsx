@@ -54,27 +54,7 @@ const App = ({ signInWithGoogle, signOut, user }: any) => {
     }
     else setAppState({ ...appState,loading:false})
   }
-
-  // const setAuth = () => {
-  //   setLoading(true);
-  //   return api.get("admins").then((admins) => {
-  //     admins.forEach((admin: any) => {
-  //       if (admin.uid === user.uid)
-  //         setAppState({ isAdmin: true, hasViewAccess: true, isGuest: false });
-  //       else {
-  //         api.get("users").then((users) => {
-  //           users.forEach((usr: any) => {
-  //             if (user.uid === usr.uid && usr.enabled) 
-  //               setAppState({ isAdmin: false, hasViewAccess: true, isGuest: false });
-  //           });
-  //         });
-  //       }
-  //     });
-  //     setLoading(false);
-  //   });
-  // }
-
-
+  
   const loadAppContent = () => {
     return (
       <AppContext.Provider value={appState}>
