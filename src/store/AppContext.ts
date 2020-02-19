@@ -5,7 +5,6 @@ class ApplicationContext {
     isGuest: boolean;
     hasViewAccess: boolean;
     loading:boolean;
-
     constructor() {
         this.isAdmin = false;
         this.isGuest = true;

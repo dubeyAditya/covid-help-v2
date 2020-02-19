@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from "react";
 
 import { Table, Divider, Button, Icon, Skeleton, message, Popconfirm, Tooltip, Empty, Alert } from "antd";
 
-/** Stylesheet Imports */
 import "./ExamsTable.scss";
 
 import api from "../../../../services";
@@ -43,7 +42,6 @@ const ExamsTable = () => {
 
 
   const discard = (record: any) => () => {
-    console.log(record);
     api.remove("exams", record.key).then(() => {
       message.success("Exam Deleted !")
       setExams(exams.filter((exam: any) => exam.key !== record.key))

@@ -6,8 +6,6 @@ import { Form, Select, Input, Button, Icon, Upload, message, Avatar } from "antd
 
 import api from "../../../../services";
 
-import ViewQuestions from "../ViewQuestions";
-
 import { Exam } from "../../../../models/exam.model";
 
 import "./QuesionForm.scss";
@@ -98,7 +96,7 @@ class QuesionForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { getFieldDecorator, getFieldValue } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     getFieldDecorator("keys", { initialValue: [] });
     const that = this;
     const props = {
@@ -201,13 +199,6 @@ class QuesionForm extends React.Component<Props, State> {
             </Button>
           </Form.Item>
         </Form>
-        <ViewQuestions
-          subject={getFieldValue('subject')}
-          url={this.state.url}
-          hideDrawer={this.hideDrawer}
-          showDrawer={this.state.isDrawerVisible}
-          fileName={this.state.fileName}>
-        </ViewQuestions>
       </>
     );
   }

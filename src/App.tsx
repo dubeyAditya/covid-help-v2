@@ -15,7 +15,7 @@ import api from "./services";
 
 import { AuthContext, appContext as AppContext, ApplicationContext } from "./store";
 
-// const auth = firebaseAdapter.getAuth();
+ const auth = firebaseAdapter.getAuth();
 
 
 const App = ({ signInWithGoogle, signOut, user }: any) => {
@@ -26,27 +26,30 @@ const App = ({ signInWithGoogle, signOut, user }: any) => {
 
 
   useEffect(() => {
-    if (user) {
-      setAuthAsync();
+
+    if(!user){
+      setAppState({ ...appState, loading:true });
     }
-    if(!user && appState.loading){
-      setTimeout(()=>setAppState({ ...appState,loading: false }),1000);
-    }
+     
+    const unsubscribe = auth.onAuthStateChanged( (user:any) => {
+      if (user) {  setAuthAsync(user); }
+    });
+
+    return () => unsubscribe();
     // eslint-disable-next-line
-  }, [user]);
+  }, []);
 
 
-  const setAuthAsync = async () => {
-    setAppState({ ...appState, loading:true });
+  const setAuthAsync = async (user:any) => {
     const admins = await api.find("admins",'uid','==', user.uid);
     const users = await api.find("users",'uid', '==', user.uid);
     if(admins.size){
-      setAppState({ isAdmin: true, hasViewAccess: true, isGuest: false,loading:false });
+      setAppState({ isAdmin: true, hasViewAccess: true, isGuest: false, loading:false });
     }
     else if(users.size){
       users.forEach((doc: any) => {
         if (doc.data().enabled) 
-          setAppState({ isAdmin: false, hasViewAccess: true, isGuest: false,loading:false });
+          setAppState({ isAdmin: false, hasViewAccess: true, isGuest: false, loading:false });
         else {
           setAppState({ isAdmin: false, hasViewAccess: false, isGuest: false, loading:false });
         }  

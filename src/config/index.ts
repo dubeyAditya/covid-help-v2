@@ -3,6 +3,7 @@ import firebaseConfig from "./firebaseConfig";
 
 const config = {
   routerLinks: routeConfig,
-  firebaseConfig: firebaseConfig
+  firebaseConfig: firebaseConfig,
+  addQuizURL: "https://newton-quiz.now.sh/"
 };
 export default config;

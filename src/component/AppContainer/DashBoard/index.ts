@@ -7,3 +7,5 @@ export { default as NavigationMenu } from "./NavigationMenu";
 export { default as NavigationHeader } from "./NavigationHeader";
 export { default as RegistrationForm } from "./RegistrationForm";
 export { default as Profile } from "./Profile";
+export { default as QuizTable } from "./QuizTable";
+export { default as MyQuiz } from "./MyQuiz";

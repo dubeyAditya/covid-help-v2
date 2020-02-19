@@ -7,10 +7,10 @@ export const GridBodyWrapper = styled.div`
 
 export const GridHeaderWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-
+  padding: 1rem 0 1rem 0;
+  flex-direction: column;
   & > div {
-    flex-basis: 10rem;
+    align-self:flex-end;
   }
 `;
 

@@ -25,8 +25,24 @@ const AdminNavigation = () => {
           <Link to="/students">Students Details</Link>
         </Menu.Item>
       </SubMenu>
+     
       <SubMenu
         key="sub2"
+        title={
+          <span>
+            <Icon type="laptop" />
+            Quizs
+            </span>
+        }
+      >
+        <Menu.Item key="3">
+          <Link to="/myQuizs"> All Quizs </Link>
+        </Menu.Item>
+      </SubMenu>  
+
+
+      {/* <SubMenu
+        key="sub3"
         title={
           <span>
             <Icon type="laptop" />
@@ -34,15 +50,18 @@ const AdminNavigation = () => {
             </span>
         }
       >
-        <Menu.Item key="2">
+        <Menu.Item key="5">
           <Link to="/addExam"> Add Exam </Link>
         </Menu.Item>
-        <Menu.Item key="3">
-          <Link to="/myExam">All Exams</Link>
+        <Menu.Item key="6">
+          <Link to="/myExam"> All Exams </Link>
         </Menu.Item>
-      </SubMenu>
+      </SubMenu> */}
+      
+      
+      
       <SubMenu
-        key="sub3"
+        key="sub4"
         title={
           <span>
             <Icon type="notification" />
@@ -81,8 +100,8 @@ const StudentNavigation = () => {
             </span>
         }
       >
-        <Menu.Item key="1">
-          <Link to="/myExam">My Exams</Link>
+       <Menu.Item key="1">
+          <Link to="/myQuizs"> My Quizs </Link>
         </Menu.Item>
       </SubMenu>
       <SubMenu
