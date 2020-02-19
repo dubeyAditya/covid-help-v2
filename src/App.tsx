@@ -28,7 +28,9 @@ const App = ({ signInWithGoogle, signOut, user }: any) => {
   useEffect(() => {
 
     if(!user){
-      setAppState({ ...appState, loading:true });
+      setTimeout(() => {
+        setAppState({ ...appState, loading:false });
+      }, 3000);
     }
      
     const unsubscribe = auth.onAuthStateChanged( (user:any) => {
@@ -41,6 +43,7 @@ const App = ({ signInWithGoogle, signOut, user }: any) => {
 
 
   const setAuthAsync = async (user:any) => {
+    setAppState({ ...appState, loading:true });
     const admins = await api.find("admins",'uid','==', user.uid);
     const users = await api.find("users",'uid', '==', user.uid);
     if(admins.size){
