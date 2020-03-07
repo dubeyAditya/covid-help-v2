@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { QuesionForm, ExamsTable, NavigationMenu, StudentsTable, NavigationHeader, Profile, QuizTable, MyQuiz } from ".";
 import { Layout, Empty } from "antd";
-import { Route, withRouter, RouteComponentProps } from "react-router-dom";
+import { Route, withRouter } from "react-router-dom";
 
 import "./DashBoard.scss";
 import { appContext } from "../../../context";
@@ -17,6 +17,7 @@ const DashBoard = ({ history }) => {
 
   useEffect(() => {
     history.push(route);
+     // eslint-disable-next-line
   }, []);
 
   return (

@@ -7,7 +7,6 @@ import { message, Table, Tooltip, Switch, Tag, Icon, Radio, Skeleton } from "ant
 import StudentsGrid from './StudentsGrid';
 
 import { GridBodyWrapper, GridHeaderWrapper } from './style';
-import { Student } from "../../../../models/user.model";
 import Column from "antd/lib/table/Column";
 
 const StudentsTable = () => {

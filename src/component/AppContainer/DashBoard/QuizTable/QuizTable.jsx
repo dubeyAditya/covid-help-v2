@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 
-import { withRouter, RouteComponentProps } from "react-router-dom";
-import { Table, Divider, Button, Icon, Skeleton, message, Tooltip, Empty, Alert, Tag } from "antd";
+import { withRouter } from "react-router-dom";
+import { Table, Divider, Button, Icon, Skeleton, Tooltip, Empty, Alert, Tag } from "antd";
 
 import config from "../../../../config";
 
@@ -42,6 +42,7 @@ const ExamsTable= ({ history }) => {
         window.onbeforeunload = function () {
             return "Dude, are you sure you want to leave? Think of the kittens!";
         };
+         // eslint-disable-next-line
     }, []);
 
     const preview = (record) => () => {

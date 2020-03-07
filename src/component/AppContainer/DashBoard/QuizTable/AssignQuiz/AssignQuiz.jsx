@@ -1,5 +1,5 @@
 import React from "react";
-import { Drawer, Button, Icon, Select, message, Avatar, Divider, List, Tag } from 'antd';
+import { Drawer, Button, Icon, Select, message, Avatar, List } from 'antd';
 import api from '../../../../../services';
 
 const { Option } = Select;

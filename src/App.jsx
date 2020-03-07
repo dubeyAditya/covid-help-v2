@@ -11,7 +11,7 @@ import withFirebaseAuth from "react-with-firebase-auth"; // authorization
 
 import firebase from "./firebase";
 
-import api from "./services";
+// import api from "./services";
 
 import { AuthContext, appContext as AppContext } from "./context";
 
