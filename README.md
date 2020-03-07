@@ -12,25 +12,17 @@ npm start
 
 
 ## Coding Standerds
-Create Componetns using [React-Typescript-Toolbox](https://marketplace.visualstudio.com/items?itemName=svenliebig.react-typescript-toolbox)
 
-Use scss for componetns
+Use styled  for components
 
 Use Atleast one test case to check component is mounted
 
 
 
-
 ## Branching Model
- Use brances with dev-username prefix
-
- add small description as suffix
- ex: dev_ady-login-auth
-
- Create Pull request to merge to master 
-
- Remove/Delete Branch if not required 
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
+ Use branch development for all the new features.
+ 
+ Create Pull request to merge to master (production) and deployed.
+ 
+ Remove/Delete Branch if not required(Don't delete developement and master) .
 

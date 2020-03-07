@@ -1,10 +1,6 @@
 import React from 'react';
 
 class ApplicationContext {
-    isAdmin: boolean;
-    isGuest: boolean;
-    hasViewAccess: boolean;
-    loading:boolean;
     constructor() {
         this.isAdmin = false;
         this.isGuest = true;
@@ -13,7 +9,7 @@ class ApplicationContext {
     }
 }
 
-const appContext = React.createContext<ApplicationContext>(new ApplicationContext());
+const appContext = React.createContext(null);
 export {
     appContext,
     ApplicationContext

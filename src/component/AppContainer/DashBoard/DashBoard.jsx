@@ -1,19 +1,15 @@
 import React, { useEffect, useContext } from "react";
 import { QuesionForm, ExamsTable, NavigationMenu, StudentsTable, NavigationHeader, Profile, QuizTable, MyQuiz } from ".";
 import { Layout, Empty } from "antd";
-import { Route, withRouter, RouteComponentProps } from "react-router-dom";
+import { Route, withRouter } from "react-router-dom";
 
 import "./DashBoard.scss";
-import { appContext } from "../../../store";
+import { appContext } from "../../../context";
 
 const { Content, Sider } = Layout;
 
-export interface Props extends RouteComponentProps {
-  children?: React.ReactNode;
-}
 
-
-const DashBoard: React.FC<Props> = ({ history }) => {
+const DashBoard = ({ history }) => {
 
   const app = useContext(appContext);
 
@@ -21,9 +17,8 @@ const DashBoard: React.FC<Props> = ({ history }) => {
 
   useEffect(() => {
     history.push(route);
-  }, [history, route]);
-
-
+     // eslint-disable-next-line
+  }, []);
 
   return (
     <Layout>

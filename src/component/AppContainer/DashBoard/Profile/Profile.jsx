@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Alert, Divider, Button } from 'antd';
-import { AuthContext, appContext } from "../../../../store";
+import { AuthContext, appContext } from "../../../../context";
 import "./Profile.scss";
 import { useState } from "react";
 import { RegistrationForm } from "..";
