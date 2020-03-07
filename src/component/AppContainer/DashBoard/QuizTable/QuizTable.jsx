@@ -1,34 +1,33 @@
 import React, { useEffect, useState, useContext } from "react";
 
 import { withRouter, RouteComponentProps } from "react-router-dom";
-import { Table, Divider, Button, Icon, Skeleton, message, Popconfirm, Tooltip, Empty, Alert, Tag } from "antd";
+import { Table, Divider, Button, Icon, Skeleton, message, Tooltip, Empty, Alert, Tag } from "antd";
 
 import config from "../../../../config";
 
 import api from "../../../../services";
 
-import { appContext, AuthContext } from "../../../../store";
+import { appContext, AuthContext } from "../../../../context";
 import { ViewQuestions } from "..";
 
 import { Quiz } from '../../../../models/quiz.model';
+import AssignQuiz from "./AssignQuiz";
 
 const { Column } = Table;
-
-interface Props extends RouteComponentProps {
-
-}
 
 const initialQuiz = new Quiz({
     quizTitle: "", quizSynopsis: "", questions: []
 });
 
-const ExamsTable: React.FC<Props> = ({ history }) => {
+const ExamsTable= ({ history }) => {
 
     const [exams, setExams] = useState([]);
 
     const [isReady, setIsReady] = useState(false);
 
     const [showModal, setShowModal] = useState(false);
+
+    const [showDrawer, setShowDrawer] = useState(false);
 
     const [quiz, setQuiz] = useState(initialQuiz);
 
@@ -37,20 +36,30 @@ const ExamsTable: React.FC<Props> = ({ history }) => {
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
-        api.get("quizList").then(successCallback).catch(failiureCallback)
+        isAdmin
+        ? api.get("quiz").then(successCallback).catch(failiureCallback)
+        : api.filter("quizList", user.uid).then(successCallback).catch(failiureCallback);
+        window.onbeforeunload = function () {
+            return "Dude, are you sure you want to leave? Think of the kittens!";
+        };
     }, []);
 
-    const preview = (record: Quiz) => () => {
+    const preview = (record) => () => {
         setQuiz(record);
         setShowModal(true);
     }
 
-    const successCallback = (exams: []) => {
+    const loadStudentList = (record) => () => {
+        setQuiz(record);
+        setShowDrawer(true);
+    }
+
+    const successCallback = (exams) => {
         setExams(exams);
         setIsReady(true);
     }
 
-    const failiureCallback = (err: any) => {
+    const failiureCallback = (err) => {
         console.log("Error in Feating Exams :", err);
     }
 
@@ -58,44 +67,31 @@ const ExamsTable: React.FC<Props> = ({ history }) => {
         window.open(config.addQuizURL)
     }
 
-    const discard = (record: any) => () => {
-        api.remove("exams", record.key).then(() => {
-            message.success("Exam Deleted !")
-            setExams(exams.filter((exam: any) => exam.key !== record.key))
-        }).catch((err) => {
-            message.error("Delete Failed !");
-            console.error(err);
-        });
-    }
-
     const closeModal = () => {
         setShowModal(false);
     }
 
-    const getDeleteBtn = (record: any) => {
-        return isAdmin ? (<>
-            <Popconfirm
-                title="Are you sure delete this Exam?"
-                onConfirm={discard(record)}
-                okText="Yes"
-                cancelText="No"
-            >
-                <Tooltip placement='bottom' title='Delete'>  <Button type="link"> <Icon type="delete" /></Button></Tooltip>
-            </Popconfirm></>) : null;
+    const getShareBtn = (record) => {
+        return isAdmin && (
+            <Button type="link" onClick={loadStudentList(record)}>
+                <Icon type="share-alt" />
+            </Button>)
     }
 
-    const getViewBtn = (record: any) => {
+    const handleDraweClose = () => {
+        setShowDrawer(false);
+    }
+
+    const getViewBtn = (record) => {
         return isAdmin
-            ? <Tooltip placement='bottom' title='View Exam'>
+            ? <Tooltip placement='bottom' title='View Quiz'>
                 <Button type="link" onClick={preview(record)}>
-                    <Icon type="eye" key="details" />
+                    <Icon type="eye" />
                 </Button>
             </Tooltip>
-            : <Tooltip placement='bottom' title='View Exam'>
-                <Button type="primary" onClick={() => (history.push("quiz"))}>
-                    Start Quiz
-                </Button>
-            </Tooltip>
+            : <Button type="primary" onClick={() => (history.push("quiz"))}>
+                View Quiz
+             </Button>
     }
 
     return (
@@ -114,19 +110,19 @@ const ExamsTable: React.FC<Props> = ({ history }) => {
                         ? (
                             <>
                                 {isAdmin && <div><Button style={{ marginBottom: '1rem' }} type="primary" onClick={openQuizForm}>Add Quiz</Button></div>}
-                                <Table dataSource={exams} pagination={{ pageSize: 20 }} scroll={{ y: 400 }} >
+                                <Table dataSource={exams} scroll={{ y: 400 }} >
                                     <Column title="Title" dataIndex="quizTitle" key="quizTitle" />
-                                    <Column title="Toatal Questions" dataIndex="questions" key="questions" render={(text, record: any) => (
+                                    <Column title="Toatal Questions" dataIndex="questions" key="questions" render={(text, record) => (
                                         <Tag>{record.questions.length}</Tag>
                                     )} />
                                     <Column title="Topic" dataIndex="quizSynopsis" key="quizSynopsis" />
                                     <Column
                                         title="Status"
                                         key="action"
-                                        render={(text, record: any) => (
+                                        render={(text, record) => (
                                             <span>
                                                 {getViewBtn(record)}
-                                                {getDeleteBtn(record)}
+                                                {getShareBtn(record)}
                                             </span>
 
                                         )}
@@ -142,6 +138,7 @@ const ExamsTable: React.FC<Props> = ({ history }) => {
                 hideDrawer={closeModal}
                 showDrawer={showModal}>
             </ViewQuestions>
+            <AssignQuiz visible={showDrawer} handleClose={handleDraweClose} quiz={quiz}></AssignQuiz>
         </>
 
     );

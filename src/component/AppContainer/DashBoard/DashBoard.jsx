@@ -4,16 +4,12 @@ import { Layout, Empty } from "antd";
 import { Route, withRouter, RouteComponentProps } from "react-router-dom";
 
 import "./DashBoard.scss";
-import { appContext } from "../../../store";
+import { appContext } from "../../../context";
 
 const { Content, Sider } = Layout;
 
-export interface Props extends RouteComponentProps {
-  children?: React.ReactNode;
-}
 
-
-const DashBoard: React.FC<Props> = ({ history }) => {
+const DashBoard = ({ history }) => {
 
   const app = useContext(appContext);
 
@@ -21,9 +17,7 @@ const DashBoard: React.FC<Props> = ({ history }) => {
 
   useEffect(() => {
     history.push(route);
-  }, [history, route]);
-
-
+  }, []);
 
   return (
     <Layout>

@@ -12,7 +12,7 @@ import Column from "antd/lib/table/Column";
 
 const StudentsTable = () => {
 
-  const [students, setStudents] = useState<Student[]>([]);
+  const [students, setStudents] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,12 +20,12 @@ const StudentsTable = () => {
 
   const [isReady, setIsReady] = useState(false);
 
-  const successCallback = (students: Student[]) => {
+  const successCallback = (students) => {
     setStudents(students);
     setIsReady(true);
   }
 
-  const errorCallBack = (err: any) => {
+  const errorCallBack = (err) => {
     console.error(err);
     setIsReady(true);
     message.error("Please Try After Sometime !");
@@ -37,12 +37,12 @@ const StudentsTable = () => {
       .catch(errorCallBack);
   }
 
-  const toggleView = (e: any) => {
+  const toggleView = (e) => {
     const isList = e.target.value === "list" ? true : false;
     setList(isList);
   }
 
-  const changeAccess = (record: any) => (currentAccess: boolean) => {
+  const changeAccess = (record) => (currentAccess) => {
     record.enabled = currentAccess;
     setIsLoading(true);
     api.update("users", record.key, record)
@@ -51,7 +51,7 @@ const StudentsTable = () => {
         message.success(`Success..! Permission ${currentAccess ? 'Enabled' : 'Disabled'} for ${record.name}`);
         loadUsers();
 
-      }).catch((err: any) => {
+      }).catch((err) => {
         setIsLoading(false);
         record.enabled = currentAccess;
         message.error("Unable to Change Permission !!");
@@ -81,7 +81,7 @@ const StudentsTable = () => {
           <Column title="Class" dataIndex="className" key="className" render={(text) => (text.length < 3 ? <Tag color="purple">{text} <sup>th</sup></Tag> : <Tag color="green">{text}</Tag>)} />
           <Column title="Course" dataIndex="course" key="course" />
           <Column title="Access" dataIndex="enabled" key="enabled"
-            render={(text, record: any) => (
+            render={(text, record) => (
               <Tooltip placement='bottom' title="Change Permission"> <Switch size="small" checked={record.enabled} onChange={changeAccess(record)} /></Tooltip>
             )} />
         </Table>

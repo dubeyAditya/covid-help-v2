@@ -8,20 +8,14 @@ import {
     message,
     Result
 } from 'antd';
-import { AuthContext } from "../../../../store";
+import { AuthContext } from "../../../../context";
 import { Student } from "../../../../models/user.model";
 import api from '../../../../services'
 
 
-export interface Props extends RouteComponentProps {
-    children?: React.ReactNode,
-    form: any;
-    user: any;
-}
-
 const { Option } = Select;
 
-class RegistrationForm extends React.Component<Props> {
+class RegistrationForm extends React.Component {
 
     state = {
         confirmDirty: false,
@@ -29,10 +23,10 @@ class RegistrationForm extends React.Component<Props> {
         isRegisterd: false
     };
 
-    handleSubmit = (e: any) => {
+    handleSubmit = (e) => {
         e.preventDefault();
         const { user } = this.context;
-        this.props.form.validateFieldsAndScroll((err: any, values: any) => {
+        this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 const name = values.first_name + " " + values.last_name;
                 const studentData = { ...user, ...values, name };
@@ -49,7 +43,7 @@ class RegistrationForm extends React.Component<Props> {
         });
     };
 
-    handleConfirmBlur = (e: any) => {
+    handleConfirmBlur = (e) => {
         const { value } = e.target;
         this.setState({ confirmDirty: this.state.confirmDirty || !!value });
     };

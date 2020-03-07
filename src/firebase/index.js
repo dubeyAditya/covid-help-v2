@@ -5,26 +5,16 @@ import "firebase/firestore";
 import "firebase/storage";
 const { firebaseConfig } = config;
 
-interface IFireBaseAdapter {
-  firebaseAppAuth: any;
-  providers: any;
-  firestore: any;
-}
+class FireBaseAdapter {
 
-class FireBaseAdapter implements IFireBaseAdapter {
-  firebaseAppAuth: any;
-  providers: any;
-  firestore: any;
-  storage: any;
-
-  constructor(firebaseConfig: any) {
-    const firebaseApp: any = firebase.initializeApp(firebaseConfig);
+  constructor(firebaseConfig) {
+    const firebaseApp = firebase.initializeApp(firebaseConfig);
     this.firebaseAppAuth = firebaseApp.auth();
     this.providers = {
       googleProvider: new firebase.auth.GoogleAuthProvider()
     };
     this.firestore = firebase.firestore();
-    this.storage =  firebase.storage();
+    this.storage = firebase.storage();
   }
 
   getFireStore() {

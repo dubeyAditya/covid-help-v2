@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Menu, Icon } from 'antd';
 import { Link } from "react-router-dom";
-import { appContext } from "../../../../store";
+import { appContext } from "../../../../context";
 const { SubMenu } = Menu;
 
 const AdminNavigation = () => {
@@ -171,7 +171,7 @@ const GuestNavigation = () => {
   );
 }
 
-const NavigationMenu: React.FC = () => {
+const NavigationMenu = () => {
   const { isAdmin, hasViewAccess } = useContext(appContext);
   return (isAdmin ? <AdminNavigation /> : hasViewAccess ? <StudentNavigation /> : <GuestNavigation />)
 }

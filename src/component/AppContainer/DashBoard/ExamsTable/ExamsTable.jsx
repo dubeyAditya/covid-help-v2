@@ -6,7 +6,7 @@ import "./ExamsTable.scss";
 
 import api from "../../../../services";
 
-import { appContext, AuthContext } from "../../../../store";
+import { appContext, AuthContext } from "../../../../context";
 
 const { Column } = Table;
 
@@ -27,31 +27,31 @@ const ExamsTable = () => {
       : api.filter("exams", user.uid).then(successCallback).catch(failiureCallback);
   }, [isAdmin, user.uid]);
 
-  const preview = (record: any) => () => {
+  const preview = (record) => () => {
     window.open(record.url);
   }
 
-  const successCallback = (exams: []) => {
+  const successCallback = (exams) => {
     setExams(exams);
     setIsReady(true);
   }
 
-  const failiureCallback = (err: any) => {
+  const failiureCallback = (err) => {
     console.log("Error in Feating Exams :", err);
   }
 
 
-  const discard = (record: any) => () => {
+  const discard = (record) => () => {
     api.remove("exams", record.key).then(() => {
       message.success("Exam Deleted !")
-      setExams(exams.filter((exam: any) => exam.key !== record.key))
+      setExams(exams.filter((exam) => exam.key !== record.key))
     }).catch((err) => {
       message.error("Delete Failed !");
       console.error(err);
     });
   }
 
-  const getDeleteBtn = (record: any) => {
+  const getDeleteBtn = (record) => {
     return isAdmin ? (<>
       <Popconfirm
         title="Are you sure delete this Exam?"
@@ -84,7 +84,7 @@ const ExamsTable = () => {
                 <Column
                   title="Action"
                   key="action"
-                  render={(text, record: any) => (
+                  render={(text, record) => (
                     <span>
                       <Tooltip placement='bottom' title='View Exam'> <Button type="link" onClick={preview(record)}><Icon type="eye" key="details" /></Button> </Tooltip>
                       {getDeleteBtn(record)}

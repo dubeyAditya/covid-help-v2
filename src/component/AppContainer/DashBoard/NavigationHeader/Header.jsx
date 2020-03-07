@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Divider, Avatar, Dropdown, Menu, Icon } from "antd";
-import { AuthContext } from "../../../../store";
+import { AuthContext } from "../../../../context";
 
 
 const NavigationHeader = () => {
