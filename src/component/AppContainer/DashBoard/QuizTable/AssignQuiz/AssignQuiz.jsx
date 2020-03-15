@@ -1,10 +1,29 @@
 import React from "react";
-import { Drawer, Button, Icon, Select, message, Avatar, List } from 'antd';
+import { Spin, Tag, message, Modal } from 'antd';
 import api from '../../../../../services';
+import TableTransfer from './TableTransfer';
 
-const { Option } = Select;
-
-
+const leftTableColumns = [
+    {
+        dataIndex: 'name',
+        title: 'Name',
+    },
+    {
+        dataIndex: 'className',
+        title: 'Class',
+        render: text => (text.length < 3 ? <Tag color="purple">{text} <sup>th</sup></Tag> : <Tag color="green">{text}</Tag>),
+    },
+    {
+        dataIndex: 'course',
+        title: 'Course',
+    },
+];
+const rightTableColumns = [
+    {
+        dataIndex: 'name',
+        title: 'Name',
+    }
+];
 
 class AssignQuiz extends React.Component {
 
@@ -14,155 +33,96 @@ class AssignQuiz extends React.Component {
         isLoading: false
     };
 
+    componentWillMount(){
+      this.loadStudentData();
+    }
+
+    loadStudentData = async ()=>{
+        this.setState({isLoading:true})
+        const quizId = this.props.quiz.key;
+        const quizList = await api.find("quizList", "quizId", '==', quizId);
+        const students = await api.find("users", 'enabled', '==', true);
+        const selectedList = quizList.length ? quizList[0].users : [];
+        this.setState({isLoading:false, selectedList, studentList: students.filter(student => student.role !== 'admin') });
+    }
+
     onClose = () => {
         this.setState({ selectedList: [] });
         this.props.handleClose();
     };
 
-    updateList = (uid) => {
-        const list = [...this.state.selectedList, uid];
-        this.setState({ selectedList: list });
+    setSelectedList = (newList) => {
+        this.setState({ selectedList: newList });
     }
 
-    removeFromList = (uid) => {
-        const selectedList = this.state.selectedList.filter((id) => id !== uid);
-        this.setState({ selectedList });
+    successCallback = () => {
+        message.success("Quiz has been assigned to Selected Students.");
+        this.setState({ isLoading: false });
+        this.onClose();
     }
 
-    componentDidMount() {
-        // TODO : Fetch Data for specific user has questions assigned
-
-        const value = this.props.quiz.key;
-        if (value) {
-            this.setState({ isLoading: true });
-            api.find("quizList", "quizId", '==', `/quiz/${value}`).then((list) => {
-                let quizList = [];
-                list.forEach((doc) => {
-                    quizList.push(doc.data());
-                })
-                const selectedList = quizList.length ? quizList[0].users : [];
-                this.setState({ isLoading: false });
-                this.setState({ selectedList })
-            });
-        }
-
-
-
-        api.find("users", 'enabled', '==', true)
-            .then((list) => {
-                let studentList = [];
-                list.forEach((doc) => {
-                    studentList.push(doc.data());
-                });
-                this.setState({ studentList });
-            })
-            .catch(err => message.error(err));
+    errorCallback = (err) => {
+        console.error(err);
+        message.error("Opps! Unable to Assign Quiz.Please try after sometime.");
+        this.setState({ isLoading: false });
     }
 
-    getStudents = () => {
-        return this.state.studentList.map((student) => (
-            <Option key={student.uid} value={student.uid} >
-                <Avatar src={student.photoURL}></Avatar> {" "} {student.name} ({student.className})
-          </Option>))
-    }
 
-    getSelectedList = () => {
-        return this.state.selectedList.map((uid) => {
-            return this.state.studentList.find((student) => student.uid === uid)
-        });
-    }
-
-    getStudentList = (student) => {
-        return <List.Item>
-            <List.Item.Meta
-                avatar={<Avatar src={student.photoURL} />}
-                title={student.name}
-                description={student.className}
-            />
-        </List.Item>
-    }
-
-    assignExams = async () => {
+    assignExams = async (activeQuiz) => {
         this.setState({ isLoading: true });
-        const quizDocId = `/quiz/${this.props.quiz.key}`;
-        const activeQuiz = {
-            state: 'Assigned',
-            quizId: quizDocId,
-            users: this.state.selectedList
+        const quizList = await api.find("quizList", "quizId", '==', activeQuiz.quizId)
+        quizList.length > 0 
+        ? api.update('quizList', quizList[0].id, activeQuiz).then(this.successCallback,this.errorCallback)
+        : api.add('quizList', activeQuiz).then(this.successCallback,this.errorCallback)
+    }
+
+    handleAssignment = async () => {
+        if (this.state.selectedList.length > 0) {
+            const quizId = this.props.quiz.key;
+            const users = this.state.studentList.filter(stu => this.state.selectedList.includes(stu.id)).map(student=>student.uid);
+            const activeQuiz = {
+                state: 'Assigned',
+                quizId,
+                users
+            }
+            console.log(activeQuiz);
+            this.assignExams(activeQuiz);
         }
-        api.add('quizList', activeQuiz).then(() => {
-            message.success("Assigned Quiz to Selected Students.");
-            this.setState({ isLoading: false });
-        }, (err) => {
-            message.error("Opps ! Unable to Assign Quiz.");
-            this.setState({ isLoading: false });
-        });
-    }
-
-
-    getActionBtn = () => {
-        return (<div
-            style={{
-                position: 'absolute',
-                bottom: 0,
-                width: '100%',
-                borderTop: '1px solid #e8e8e8',
-                padding: '10px 16px',
-                textAlign: 'right',
-                left: 0,
-                background: '#fff',
-                borderRadius: '0 0 4px 4px',
-            }}>
-            <Button
-                style={{
-                    marginRight: 8,
-                }}
-                onClick={this.onClose}>
-                Cancel
-             </Button>
-            <Button onClick={this.assignExams} type="primary">
-                Assign
-            </Button>
-        </div>)
-    }
-
-    loadContent = () => {
-        return (
-            <div>
-                <Select
-                    onSelect={this.updateList}
-                    onDeselect={this.removeFromList}
-                    style={{ width: '100%' }}
-                    mode="multiple"
-                    size="large"
-                    placeholder="Please select students"
-                    removeIcon={<Icon style={{ fontSize: '16px' }} type="close-circle" theme="twoTone" twoToneColor="#eb2f96" />}
-                    menuItemSelectedIcon={<Icon type="check-circle" style={{ fontSize: '16px' }} theme="filled" twoToneColor="#52c41a" />}
-                >
-                    {this.getStudents()}
-                </Select>
-                <List
-                    header={<h4>Shared With</h4>}
-                    loading={this.state.isLoading}
-                    itemLayout="horizontal"
-                    dataSource={this.getSelectedList()}
-                    renderItem={this.getStudentList}
-                />
-                {this.getActionBtn()}
-            </div>)
+        else {
+            message.warning("Please select atleast one student.");
+        }
     }
 
     render() {
-        return <Drawer
-            title="Select Students"
-            width="400"
-            placement="right"
-            closable={false}
-            onClose={this.onClose}
-            visible={this.props.visible}
-        >
-            {this.loadContent()}
-        </Drawer>
+        const { selectedList, studentList, isLoading } = this.state;
+        const { visible } = this.props;
+        return (
+            <Modal
+                title="Select Students"
+                closable={false}
+                onOk={this.handleAssignment}
+                onCancel={this.onClose}
+                visible={visible}
+                width={window.innerWidth * 0.8}
+                okText="Assign"
+                confirmLoading={isLoading}
+                maskClosable={false}
+                destroyOnClose={true}
+            >
+               <Spin tip="Loading..." spinning={isLoading}>{
+                    <TableTransfer
+                    dataSource={studentList}
+                    targetKeys={selectedList}
+                    showSearch={true}
+                    onChange={this.setSelectedList}
+                    filterOption={(inputValue, item) =>
+                        item.name.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1 || item.className.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
+                    }
+                    leftColumns={leftTableColumns}
+                    rightColumns={rightTableColumns}
+                />
+               }</Spin>    
+            </Modal>)
     }
 }
 export default AssignQuiz;

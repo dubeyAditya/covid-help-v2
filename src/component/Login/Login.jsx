@@ -7,11 +7,7 @@ import Icon from "antd/lib/icon";
 import Card from "antd/lib/card";
 import { Button } from "antd";
 
-export interface Props {
-  signinWithGoogle: any;
-}
-
-const Login = ({ signInWithGoogle }: any) => {
+const Login = ({ signInWithGoogle }) => {
   return (
     <div className="login-wrapper">
       <Card

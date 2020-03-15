@@ -20,7 +20,7 @@ const StudentsTable = () => {
   const [isReady, setIsReady] = useState(false);
 
   const successCallback = (students) => {
-    setStudents(students);
+    setStudents(students.filter(student => student.role !== 'admin'));
     setIsReady(true);
   }
 
@@ -68,13 +68,13 @@ const StudentsTable = () => {
       <GridHeaderWrapper>
         <div>
           <Radio.Group defaultValue="list" buttonStyle="solid" onChange={toggleView}>
-            <Radio.Button value="list"> <Icon type="unordered-list" /></Radio.Button>
-            <Radio.Button value="grid"> <Icon type="table" /></Radio.Button>
+            <Radio.Button value="list"><Tooltip title='List' placement='bottom'> <Icon type="unordered-list" /></Tooltip></Radio.Button>
+            <Radio.Button value="grid"><Tooltip title='Grid' placement='bottom'> <Icon type="table" /></Tooltip></Radio.Button>
           </Radio.Group>
         </div>
       </GridHeaderWrapper>
       {isList ?
-        <Table dataSource={students} size="small" loading={isLoading} pagination={{ pageSize: 20 }} scroll={{ y: 400 }}>
+        <Table dataSource={students} size="small" loading={isLoading} pagination={{ pageSize: 10 }}>
           <Column title="Name" dataIndex="name" key="name" />
           <Column title="Contact" dataIndex="phoneNumber" key="phoneNumber" />
           <Column title="Class" dataIndex="className" key="className" render={(text) => (text.length < 3 ? <Tag color="purple">{text} <sup>th</sup></Tag> : <Tag color="green">{text}</Tag>)} />
@@ -90,7 +90,7 @@ const StudentsTable = () => {
           </GridBodyWrapper>
         </>}
     </>
-    : <Skeleton active />
+      : <Skeleton active />
 
   );
 }

@@ -33,7 +33,12 @@ const service = {
     },
 
     find: async function (collectionName, key, op, val) {
-        return await db.collection(collectionName).where(key, op, val).get();
+        const docRef = await db.collection(collectionName).where(key, op, val).get();
+        let list = [];
+        docRef.forEach((doc) => {
+            list.push({ id: doc.id, ...doc.data() });
+        })
+        return list;
     },
     filter: async function (collectionName, uid) {
         const querySnapshot = await db.collection(collectionName).where("users", "array-contains", uid).get();

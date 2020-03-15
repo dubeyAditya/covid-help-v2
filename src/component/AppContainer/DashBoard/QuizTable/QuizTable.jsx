@@ -19,7 +19,7 @@ const initialQuiz = new Quiz({
     quizTitle: "", quizSynopsis: "", questions: []
 });
 
-const ExamsTable= ({ history }) => {
+const ExamsTable = ({ history }) => {
 
     const [exams, setExams] = useState([]);
 
@@ -37,12 +37,16 @@ const ExamsTable= ({ history }) => {
 
     useEffect(() => {
         isAdmin
-        ? api.get("quiz").then(successCallback).catch(failiureCallback)
-        : api.filter("quizList", user.uid).then(successCallback).catch(failiureCallback);
+            ? api.get("quiz").then(successCallback).catch(failiureCallback)
+            : api.filter("quizList", user.uid).then(async ([quiz])=>{
+                api.get("quiz",'quizId','==',quiz.quizId)
+                .then(successCallback)
+                .catch(failiureCallback)
+            }).catch(failiureCallback);
         window.onbeforeunload = function () {
             return "Dude, are you sure you want to leave? Think of the kittens!";
         };
-         // eslint-disable-next-line
+        // eslint-disable-next-line
     }, []);
 
     const preview = (record) => () => {
@@ -51,11 +55,14 @@ const ExamsTable= ({ history }) => {
     }
 
     const loadStudentList = (record) => () => {
-        setQuiz(record);
         setShowDrawer(true);
+        setQuiz(record);
     }
 
+
+
     const successCallback = (exams) => {
+        console.log("Exams", exams);
         setExams(exams);
         setIsReady(true);
     }
@@ -111,7 +118,7 @@ const ExamsTable= ({ history }) => {
                         ? (
                             <>
                                 {isAdmin && <div><Button style={{ marginBottom: '1rem' }} type="primary" onClick={openQuizForm}>Add Quiz</Button></div>}
-                                <Table dataSource={exams} scroll={{ y: 400 }} >
+                                <Table dataSource={exams} >
                                     <Column title="Title" dataIndex="quizTitle" key="quizTitle" />
                                     <Column title="Toatal Questions" dataIndex="questions" key="questions" render={(text, record) => (
                                         <Tag>{record.questions.length}</Tag>
@@ -139,7 +146,7 @@ const ExamsTable= ({ history }) => {
                 hideDrawer={closeModal}
                 showDrawer={showModal}>
             </ViewQuestions>
-            <AssignQuiz visible={showDrawer} handleClose={handleDraweClose} quiz={quiz}></AssignQuiz>
+            {showDrawer && <AssignQuiz visible={showDrawer} handleClose={handleDraweClose}  quiz={quiz}></AssignQuiz>}
         </>
 
     );

@@ -11,7 +11,7 @@ import withFirebaseAuth from "react-with-firebase-auth"; // authorization
 
 import firebase from "./firebase";
 
-// import api from "./services";
+import api from "./services";
 
 import { AuthContext, appContext as AppContext } from "./context";
 
@@ -29,21 +29,27 @@ const App = ({ signInWithGoogle, signOut, user }) => {
     let unsubscribe;
     if (!user) {
       setTimeout(() => {
-        setAppState({ ...appState, loading: false });
+        setAppState({ loading: false });
+        unsubscribe = auth.onAuthStateChanged((user) => {
+          if (user) { 
+            setAuthAsync(user);
+          }
+        });
       }, 3000);
     }
 
-    unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) { setAuthAsync(user); }
-    });
-
     return () => unsubscribe();
     // eslint-disable-next-line
-  }, [user]);
+  }, []);
 
 
   const setAuthAsync = async (user) => {
-    setAppState({ ...appState, loading: false });
+    setAppState({ loading: true });
+    const [ student ] = await api.find('users', 'uid','==', user.uid);
+    const  isAdmin = student.role === 'admin'; 
+    const hasViewAccess = isAdmin || student.enabled;
+    console.log("User :",student)
+    setAppState({ isAdmin, hasViewAccess, loading: false });
   }
 
   const loadAppContent = () => {
