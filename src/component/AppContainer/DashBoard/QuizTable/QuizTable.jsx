@@ -38,10 +38,14 @@ const ExamsTable = ({ history }) => {
     useEffect(() => {
         isAdmin
             ? api.get("quiz").then(successCallback).catch(failiureCallback)
-            : api.filter("quizList", user.uid).then(async ([quiz])=>{
-                api.get("quiz",'quizId','==',quiz.quizId)
-                .then(successCallback)
-                .catch(failiureCallback)
+            : api.filter("quizList", user.uid).then(async ([quiz]) => {
+                if (quiz)
+                    api.get("quiz", 'quizId', '==', quiz.quizId)
+                        .then(successCallback)
+                        .catch(failiureCallback)
+                else {
+                    successCallback([]);
+                }        
             }).catch(failiureCallback);
         window.onbeforeunload = function () {
             return "Dude, are you sure you want to leave? Think of the kittens!";
@@ -86,6 +90,11 @@ const ExamsTable = ({ history }) => {
             </Button>)
     }
 
+    const loadQuiz = (record) => () => {
+        console.log(record);
+        history.push(`quiz/${record.key}`)
+    }
+
     const handleDraweClose = () => {
         setShowDrawer(false);
     }
@@ -97,7 +106,7 @@ const ExamsTable = ({ history }) => {
                     <Icon type="eye" />
                 </Button>
             </Tooltip>
-            : <Button type="primary" onClick={() => (history.push("quiz"))}>
+            : <Button type="primary" onClick={loadQuiz(record)}>
                 View Quiz
              </Button>
     }
@@ -146,7 +155,7 @@ const ExamsTable = ({ history }) => {
                 hideDrawer={closeModal}
                 showDrawer={showModal}>
             </ViewQuestions>
-            {showDrawer && <AssignQuiz visible={showDrawer} handleClose={handleDraweClose}  quiz={quiz}></AssignQuiz>}
+            {showDrawer && <AssignQuiz visible={showDrawer} handleClose={handleDraweClose} quiz={quiz}></AssignQuiz>}
         </>
 
     );

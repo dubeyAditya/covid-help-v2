@@ -13,6 +13,16 @@ const service = {
         return exams;
     },
 
+    getDoc: async function (collectionName, docId){
+        let data = null;
+        const doc = await db.collection(collectionName).doc(docId).get();
+        if (doc.exists) {
+            data = doc.data();
+            console.log(data);
+        }
+        return data;
+    },
+
     add: async function (collectionName, data) {
         return await db.collection(collectionName).add(data);
     },

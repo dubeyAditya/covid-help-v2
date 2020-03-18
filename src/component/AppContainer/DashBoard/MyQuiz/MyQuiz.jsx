@@ -1,17 +1,26 @@
-import React  from "react";
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-
-
-interface Props extends RouteComponentProps {
-    children?: React.ReactNode
-}
-
-const MyQuiz: React.FC<Props> = ({ history }) => {
-    
+import React,{useEffect,useState}  from "react";
+import { withRouter } from 'react-router-dom';
+import Quiz from 'react-quiz-component';
+import api from "../../../../services";
+import { Skeleton } from 'antd';
+const MyQuiz = ({match}) => {
    
+   const { quizId } = match.params;
+
+   const [quiz, setQuiz] = useState(null);
+   
+   useEffect(()=>{
+     api.getDoc('quiz', quizId).then((quiz) => {
+        console.log(quiz);
+        if(quiz) setQuiz(quiz);
+     }).catch((err)=>console.error(err));
+   }, []);
+   
+
    return <>
-      <div>Hello Quiz</div>
+        {quiz ?  <Quiz quiz={quiz}></Quiz> : <Skeleton></Skeleton> }
     </>
+   
 }
 
 export default withRouter(MyQuiz);

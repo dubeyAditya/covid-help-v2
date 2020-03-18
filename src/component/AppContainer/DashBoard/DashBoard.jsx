@@ -50,7 +50,7 @@ const DashBoard = ({ history }) => {
           <Route path="/myProfile" component={Profile}></Route>
           <Route path="/myQuizs" component={QuizTable}></Route>
           <Route path="/noData" component={Empty}></Route>
-          <Route path="/quiz" component={MyQuiz}></Route>
+          <Route path="/quiz/:quizId" component={MyQuiz}></Route>
         </Content>
       </Layout>
     </Layout>

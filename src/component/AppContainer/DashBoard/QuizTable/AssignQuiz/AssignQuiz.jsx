@@ -33,17 +33,18 @@ class AssignQuiz extends React.Component {
         isLoading: false
     };
 
-    componentWillMount(){
-      this.loadStudentData();
+    componentWillMount() {
+        this.loadStudentData();
     }
 
-    loadStudentData = async ()=>{
-        this.setState({isLoading:true})
+    loadStudentData = async () => {
+        this.setState({ isLoading: true })
         const quizId = this.props.quiz.key;
         const quizList = await api.find("quizList", "quizId", '==', quizId);
         const students = await api.find("users", 'enabled', '==', true);
-        const selectedList = quizList.length ? quizList[0].users : [];
-        this.setState({isLoading:false, selectedList, studentList: students.filter(student => student.role !== 'admin') });
+        const assignedUsers = quizList.length ? quizList[0].users : [];
+        const selectedList = this.mapUidtoId(assignedUsers, students);
+        this.setState({ isLoading: false, selectedList, studentList: students.filter(student => student.role !== 'admin') });
     }
 
     onClose = () => {
@@ -51,8 +52,16 @@ class AssignQuiz extends React.Component {
         this.props.handleClose();
     };
 
-    setSelectedList = (newList) => {
-        this.setState({ selectedList: newList });
+    setSelectedList = (selectedStudentDocIds) => {
+        this.setState({ selectedList: selectedStudentDocIds });
+    }
+
+    mapIdtoUid = () => {
+        return this.state.studentList.filter(stu => this.state.selectedList.includes(stu.id)).map(student => student.uid);
+    }
+
+    mapUidtoId = (users, students) => {
+       return students.filter(student => users.includes(student.uid)).map(student => student.id);
     }
 
     successCallback = () => {
@@ -67,19 +76,18 @@ class AssignQuiz extends React.Component {
         this.setState({ isLoading: false });
     }
 
-
     assignExams = async (activeQuiz) => {
         this.setState({ isLoading: true });
         const quizList = await api.find("quizList", "quizId", '==', activeQuiz.quizId)
-        quizList.length > 0 
-        ? api.update('quizList', quizList[0].id, activeQuiz).then(this.successCallback,this.errorCallback)
-        : api.add('quizList', activeQuiz).then(this.successCallback,this.errorCallback)
+        quizList.length > 0
+            ? api.update('quizList', quizList[0].id, activeQuiz).then(this.successCallback, this.errorCallback)
+            : api.add('quizList', activeQuiz).then(this.successCallback, this.errorCallback)
     }
 
     handleAssignment = async () => {
         if (this.state.selectedList.length > 0) {
             const quizId = this.props.quiz.key;
-            const users = this.state.studentList.filter(stu => this.state.selectedList.includes(stu.id)).map(student=>student.uid);
+            const users = this.mapIdtoUid();
             const activeQuiz = {
                 state: 'Assigned',
                 quizId,
@@ -92,6 +100,8 @@ class AssignQuiz extends React.Component {
             message.warning("Please select atleast one student.");
         }
     }
+
+    filterList = (inputValue, item) => (item.name.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1 || item.className.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1)
 
     render() {
         const { selectedList, studentList, isLoading } = this.state;
@@ -109,19 +119,17 @@ class AssignQuiz extends React.Component {
                 maskClosable={false}
                 destroyOnClose={true}
             >
-               <Spin tip="Loading..." spinning={isLoading}>{
+                <Spin tip="Loading..." spinning={isLoading}>{
                     <TableTransfer
-                    dataSource={studentList}
-                    targetKeys={selectedList}
-                    showSearch={true}
-                    onChange={this.setSelectedList}
-                    filterOption={(inputValue, item) =>
-                        item.name.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1 || item.className.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
-                    }
-                    leftColumns={leftTableColumns}
-                    rightColumns={rightTableColumns}
-                />
-               }</Spin>    
+                        dataSource={studentList}
+                        targetKeys={selectedList}
+                        showSearch={true}
+                        onChange={this.setSelectedList}
+                        filterOption={this.filterList}
+                        leftColumns={leftTableColumns}
+                        rightColumns={rightTableColumns}
+                    />
+                }</Spin>
             </Modal>)
     }
 }
