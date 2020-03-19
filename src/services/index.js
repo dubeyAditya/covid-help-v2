@@ -1,6 +1,7 @@
 import FireBase from "../firebase";
 const db = FireBase.getFireStore();
 const storage = FireBase.getStorage();
+const batch = db.batch();
 
 const service = {
     get: async function (collectionName) {
@@ -13,11 +14,11 @@ const service = {
         return exams;
     },
 
-    getDoc: async function (collectionName, docId){
+    getDoc: async function (collectionName, docId) {
         let data = null;
         const doc = await db.collection(collectionName).doc(docId).get();
         if (doc.exists) {
-            data = doc.data();
+            data = { id: doc.id, ...doc.data() };
             console.log(data);
         }
         return data;
@@ -25,6 +26,15 @@ const service = {
 
     add: async function (collectionName, data) {
         return await db.collection(collectionName).add(data);
+    },
+
+    addBatch: async function(collectionName, dataArray){
+        
+        dataArray.forEach((doc)=>{
+            batch.set(db.collection(collectionName).doc(), doc);
+        });
+
+        return batch.commit();
     },
 
     remove: async function (collectionName, docId) {

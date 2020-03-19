@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 
 import { withRouter } from "react-router-dom";
-import { Table, Divider, Button, Icon, Skeleton, Tooltip, Empty, Alert, Tag } from "antd";
+import { Table, Divider, Button, Icon, Skeleton, Tooltip, Empty, Alert, Tag, message } from "antd";
 
 import config from "../../../../config";
 
@@ -37,19 +37,8 @@ const ExamsTable = ({ history }) => {
 
     useEffect(() => {
         isAdmin
-            ? api.get("quiz").then(successCallback).catch(failiureCallback)
-            : api.filter("quizList", user.uid).then(async ([quiz]) => {
-                if (quiz)
-                    api.get("quiz", 'quizId', '==', quiz.quizId)
-                        .then(successCallback)
-                        .catch(failiureCallback)
-                else {
-                    successCallback([]);
-                }        
-            }).catch(failiureCallback);
-        window.onbeforeunload = function () {
-            return "Dude, are you sure you want to leave? Think of the kittens!";
-        };
+            ? loadAllQuiz()
+            : loadUserQuiz()
         // eslint-disable-next-line
     }, []);
 
@@ -57,13 +46,6 @@ const ExamsTable = ({ history }) => {
         setQuiz(record);
         setShowModal(true);
     }
-
-    const loadStudentList = (record) => () => {
-        setShowDrawer(true);
-        setQuiz(record);
-    }
-
-
 
     const successCallback = (exams) => {
         console.log("Exams", exams);
@@ -73,6 +55,47 @@ const ExamsTable = ({ history }) => {
 
     const failiureCallback = (err) => {
         console.log("Error in Feating Exams :", err);
+    }
+
+    const loadStudentList = (record) => () => {
+        setShowDrawer(true);
+        setQuiz(record);
+    }
+
+    const loadAllQuiz = () => {
+        api.get("quiz").then(successCallback).catch(failiureCallback);
+    }
+
+    const loadUserQuiz = () => {
+        api.filter("quizList", user.uid).then(async (quizs) => {
+            if (quizs.length > 0) {
+                const userQuizs = await mapTouserQuiz(quizs);
+                successCallback(userQuizs);
+            }
+            else {
+                successCallback([]);
+            }
+        }).catch(failiureCallback);
+    }
+
+    const mapTouserQuiz = async (quizs)=> {
+        const userQuizs = [];
+        for (let i = 0; i < quizs.length; i++) {
+            const item = quizs[i];
+            const quiz = await api.getDoc("quiz", item.quizId);
+            if (quiz) {
+                userQuizs.push(quiz);
+            }
+        }
+        return userQuizs;
+    }
+
+    const removeQuiz = (quizId) => () => {
+        api.remove('quiz', quizId)
+            .then(() => {
+                const remainingExams = exams.filter(exam => exam.key !== quizId);
+                setExams(remainingExams);
+            }).catch(err => message.error("Unable to delete exam.Please try later"))
     }
 
     const openQuizForm = () => {
@@ -90,9 +113,16 @@ const ExamsTable = ({ history }) => {
             </Button>)
     }
 
+    const getDeleteBtn = (record) => {
+        return isAdmin && (
+            <Button type="link" onClick={removeQuiz(record.key)}>
+                <Icon type="delete" />
+            </Button>)
+    }
+
     const loadQuiz = (record) => () => {
         console.log(record);
-        history.push(`quiz/${record.key}`)
+        history.push(`quiz/${record.id}`)
     }
 
     const handleDraweClose = () => {
@@ -134,12 +164,13 @@ const ExamsTable = ({ history }) => {
                                     )} />
                                     <Column title="Topic" dataIndex="quizSynopsis" key="quizSynopsis" />
                                     <Column
-                                        title="Status"
+                                        title="Action"
                                         key="action"
                                         render={(text, record) => (
                                             <span>
                                                 {getViewBtn(record)}
                                                 {getShareBtn(record)}
+                                                {getDeleteBtn(record)}
                                             </span>
 
                                         )}

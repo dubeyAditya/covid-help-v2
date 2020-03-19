@@ -13,7 +13,7 @@ const DashBoard = ({ history }) => {
 
   const app = useContext(appContext);
 
-  const route = app.isAdmin ? "myQuizs" :  app.hasViewAccess ? "myQuizs" : "myProfile";
+  const route = app.isAdmin ? "/myQuizs" :  app.hasViewAccess ? "/myQuizs" : "/myProfile";
 
   useEffect(() => {
     history.push(route);
