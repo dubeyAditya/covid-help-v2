@@ -2,3 +2,18 @@ body {
   height: 98vh;
   background-color: #f2f2f2;
 }
+
+div .react-quiz-container{
+ width: inherit;
+}
+
+@media (max-width: 600px) {
+  div .react-quiz-container{
+    margin: 0;
+  }
+}
+
+.site-page-header-ghost-wrapper {
+  background-color: #f5f5f5;
+  padding: 24px;
+}
