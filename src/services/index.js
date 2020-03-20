@@ -1,7 +1,6 @@
 import FireBase from "../firebase";
 const db = FireBase.getFireStore();
 const storage = FireBase.getStorage();
-const batch = db.batch();
 
 const service = {
     get: async function (collectionName) {
@@ -28,12 +27,18 @@ const service = {
         return await db.collection(collectionName).add(data);
     },
 
-    addBatch: async function(collectionName, dataArray){
-        
-        dataArray.forEach((doc)=>{
+    addBatch: async function (collectionName, dataArray) {
+        const batch = db.batch();
+        dataArray.forEach((doc) => {
             batch.set(db.collection(collectionName).doc(), doc);
         });
+        return batch.commit();
+    },
 
+    removeBatch: async function (collectionName, key, op, val) {
+        const batch = db.batch();
+        const snapshot = await db.collection(collectionName).where(key, op, val).get();
+        snapshot.forEach(doc => batch.delete(db.collection(collectionName).doc(doc.id)))
         return batch.commit();
     },
 
@@ -60,6 +65,7 @@ const service = {
         })
         return list;
     },
+
     filter: async function (collectionName, uid) {
         const querySnapshot = await db.collection(collectionName).where("users", "array-contains", uid).get();
         const exams = [];
@@ -69,6 +75,7 @@ const service = {
         });
         return exams;
     },
+
     getDocRef: function (docId) {
         return db.doc(docId).ref;
     }

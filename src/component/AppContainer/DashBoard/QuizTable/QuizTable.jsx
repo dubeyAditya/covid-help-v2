@@ -37,7 +37,7 @@ const ExamsTable = ({ history }) => {
 
     useEffect(() => {
         isAdmin
-            ? loadAllQuiz()
+            ? loadAdminQuiz()
             : loadUserQuiz()
         // eslint-disable-next-line
     }, []);
@@ -62,12 +62,16 @@ const ExamsTable = ({ history }) => {
         setQuiz(record);
     }
 
-    const loadAllQuiz = () => {
-        api.get("quiz").then(successCallback).catch(failiureCallback);
+    const loadAdminQuiz = () => {
+        api.get("quiz").then(async (quizs) => {
+            const adminQuizs = await mapToAdminQuiz(quizs);
+            successCallback(adminQuizs)
+        }).catch(failiureCallback);
     }
 
+
     const loadUserQuiz = () => {
-        api.filter("quizList", user.uid).then(async (quizs) => {
+        api.find("userQuiz", 'uid', '==', user.uid).then(async (quizs) => {
             if (quizs.length > 0) {
                 const userQuizs = await mapTouserQuiz(quizs);
                 successCallback(userQuizs);
@@ -78,11 +82,26 @@ const ExamsTable = ({ history }) => {
         }).catch(failiureCallback);
     }
 
-    const mapTouserQuiz = async (quizs)=> {
+    const mapToAdminQuiz = async (quizs) => {
+        const adminQuizs = [];
+        for (let i = 0; i < quizs.length; i++) {
+            const quiz = quizs[i];
+            const [item] = await api.find("quizList", 'quizId', '==', quiz.key);
+            console.log("this is QuisListItem", item);
+            quiz.status = item && item.state ? item.state : 'Unassigned';
+            adminQuizs.push(quiz);
+        }
+        return adminQuizs;
+
+    }
+
+    const mapTouserQuiz = async (quizs) => {
         const userQuizs = [];
         for (let i = 0; i < quizs.length; i++) {
             const item = quizs[i];
             const quiz = await api.getDoc("quiz", item.quizId);
+            console.log(quiz, item);
+            quiz.status = item.state;
             if (quiz) {
                 userQuizs.push(quiz);
             }
@@ -125,6 +144,14 @@ const ExamsTable = ({ history }) => {
         history.push(`quiz/${record.id}`)
     }
 
+    const loadResult = (record) => async() => {
+        
+        api.find('userResults', 'quizId', '==', record.id).then((quizs) => {
+            const result = quizs.find(quiz => quiz.uid=== user.uid);
+            console.log(result);
+        });
+    }
+
     const handleDraweClose = () => {
         setShowDrawer(false);
     }
@@ -136,9 +163,30 @@ const ExamsTable = ({ history }) => {
                     <Icon type="eye" />
                 </Button>
             </Tooltip>
-            : <Button type="primary" onClick={loadQuiz(record)}>
-                View Quiz
-             </Button>
+            : record.status === 'Completed'
+                ? <Button type="primary" onClick={loadResult(record)}>
+                    View Result
+                </Button>
+                : <Button type="primary" onClick={loadQuiz(record)}>
+                    View Quiz
+                </Button>
+
+    }
+
+    const renderStatusTags = (text, record) => {
+        switch (text.toLowerCase()) {
+            case 'assigned':
+                return <Tag color='blue' >{text}</Tag>
+            case 'unassigned':
+                return <Tag color='orange'>{text}</Tag>
+            case 'inprogress':
+                return <Tag color='magenta'>{text}</Tag>
+            case 'completed':
+                return <Tag color='green'>{text}</Tag>
+
+            default:
+                return <Tag color='red'>{text}</Tag>
+        }
     }
 
     return (
@@ -162,7 +210,8 @@ const ExamsTable = ({ history }) => {
                                     <Column title="Toatal Questions" dataIndex="questions" key="questions" render={(text, record) => (
                                         <Tag>{record.questions.length}</Tag>
                                     )} />
-                                    <Column title="Topic" dataIndex="quizSynopsis" key="quizSynopsis" />
+                                    <Column title="Status" dataIndex="status" key="status" render={renderStatusTags} />
+
                                     <Column
                                         title="Action"
                                         key="action"

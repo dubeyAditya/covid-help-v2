@@ -61,7 +61,7 @@ class AssignQuiz extends React.Component {
     }
 
     mapUidtoId = (users, students) => {
-       return students.filter(student => users.includes(student.uid)).map(student => student.id);
+        return students.filter(student => users.includes(student.uid)).map(student => student.id);
     }
 
     successCallback = () => {
@@ -76,25 +76,41 @@ class AssignQuiz extends React.Component {
         this.setState({ isLoading: false });
     }
 
-    assignExams = async (activeQuiz) => {
+    assignExams = async (activeQuiz, userQuizs) => {
         this.setState({ isLoading: true });
         const quizList = await api.find("quizList", "quizId", '==', activeQuiz.quizId)
-        quizList.length > 0
-            ? api.update('quizList', quizList[0].id, activeQuiz).then(this.successCallback, this.errorCallback)
-            : api.add('quizList', activeQuiz).then(this.successCallback, this.errorCallback)
+        if (quizList.length > 0) {
+            api.update('quizList', quizList[0].id, activeQuiz).then(async () => {
+                await api.removeBatch('userQuiz', 'quizId', '==', activeQuiz.quizId);
+                await api.addBatch('userQuiz', userQuizs);
+                this.successCallback();
+            }, this.errorCallback)
+        }
+        else {
+            api.add('quizList', activeQuiz).then(() => api.addBatch('userQuiz', userQuizs).then(this.successCallback), this.errorCallback);
+        }
+
     }
 
     handleAssignment = async () => {
         if (this.state.selectedList.length > 0) {
             const quizId = this.props.quiz.key;
             const users = this.mapIdtoUid();
+
             const activeQuiz = {
                 state: 'Assigned',
                 quizId,
                 users
             }
-            console.log(activeQuiz);
-            this.assignExams(activeQuiz);
+
+            const userQuizs = users.map((uid) => ({
+                uid,
+                quizId,
+                state: 'Assigned',
+                resultId: null
+            }));
+
+            this.assignExams(activeQuiz, userQuizs);
         }
         else {
             message.warning("Please select atleast one student.");

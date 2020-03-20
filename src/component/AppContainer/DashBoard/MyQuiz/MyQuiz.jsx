@@ -2,19 +2,22 @@ import React, { useEffect, useState } from "react";
 import { withRouter } from 'react-router-dom';
 import Quiz from 'react-quiz-component';
 import api from "../../../../services";
-import { Skeleton, PageHeader, Descriptions, Button,Divider } from 'antd';
-import { QuizSummary } from "./QuizSummary";
+import { Skeleton, PageHeader, Descriptions, Button } from 'antd';
+import { useContext } from "react";
+import { AuthContext } from "../../../../context";
+
+const MemoizedQuiz = React.memo(({ shuffle, quiz, onQuizComplete }) => <Quiz shuffle={shuffle} quiz={quiz} onComplete={onQuizComplete}></Quiz>)
+
+
 const MyQuiz = ({ match, history }) => {
 
    const { quizId } = match.params;
 
+   const { user } = useContext(AuthContext);
+
    const [quiz, setQuiz] = useState(null);
 
    const [started, setStarted] = useState(false);
-
-   const [completed, setCompleted] = useState(false);
-
-   const [showSummary, setShowSummary] = useState(false);
 
    useEffect(() => {
 
@@ -24,26 +27,35 @@ const MyQuiz = ({ match, history }) => {
 
       api.getDoc('quiz', quizId).then((quiz) => {
          if (quiz) setQuiz(quiz);
+         console.log("Quiz Effect")
       }).catch((err) => console.error(err));
-      
-   // eslint-disable-next-line
+
+      // eslint-disable-next-line
    }, []);
 
 
    const onQuizComplete = (summary) => {
-      setCompleted(true);
-      //api.add('userResults', summary).then();
+      const uid = user.uid;
+      const result = {
+         uid,
+         quizId,
+         summary
+      }
+      api.add('userResults', result).then((result) => {
+         api.find('userQuiz', 'quizId', '==', quizId).then((quizs) => {
+            const quiz = quizs.find((quiz) => quiz.uid === uid);
+            const { id } = quiz;
+            return api.update('userQuiz', id, { state: 'Completed', resultId: result.id });
+         }).then(() => {
+            console.log(result, quiz)
+         });
+      });
    }
-
-   const getQuizVisibility = () => {
-      return !(completed && !showSummary) ? 'block' : 'none'
-   }
-
 
    return <>
       {quiz ?
          <>
-            {!started &&
+            {!started ?
                <>
                   <PageHeader
                      className="site-page-header"
@@ -66,14 +78,13 @@ const MyQuiz = ({ match, history }) => {
                         </Descriptions.Item>
                      </Descriptions>
                   </PageHeader>
-               </>}
-            {started && <>
-              { completed && <QuizSummary onSummary={setShowSummary}/>} 
-              <Divider></Divider> 
-              <div style={{display:getQuizVisibility()}}> <Quiz shuffle={true} quiz={quiz} onComplete={onQuizComplete}></Quiz></div>
-             </>
-             }
-
+               </>
+               : <>
+                  <div>
+                     <MemoizedQuiz quiz={quiz} shuffle={true} onQuizComplete={onQuizComplete}> </MemoizedQuiz>
+                  </div>
+               </>
+            }
          </>
          : <Skeleton></Skeleton>
       }
