@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 
 import { withRouter } from "react-router-dom";
-import { Table, Divider, Button, Icon, Skeleton, Tooltip, Empty, Alert, Tag, message } from "antd";
+import { Table, Divider, Button, Icon, Skeleton, Empty, Alert, Tag, message } from "antd";
 
 import config from "../../../../config";
 
@@ -29,6 +29,10 @@ const ExamsTable = ({ history }) => {
 
     const [showDrawer, setShowDrawer] = useState(false);
 
+    const [isResult, setIsResult] = useState(false);
+
+    const [summary, setSummary] = useState(false);
+
     const [quiz, setQuiz] = useState(initialQuiz);
 
     const { isAdmin, hasViewAccess } = useContext(appContext);
@@ -42,9 +46,15 @@ const ExamsTable = ({ history }) => {
         // eslint-disable-next-line
     }, []);
 
-    const preview = (record) => () => {
-        setQuiz(record);
-        setShowModal(true);
+    const viewResult = (quiz) => () => {
+        setIsResult(true);
+        api.find('userResults', 'quizId', '==', quiz.id).then((quizs) => {
+            const { summary } = quizs.find(quiz => quiz.uid === user.uid);
+            setSummary(summary);
+            setQuiz(quiz);
+            setShowModal(true);
+            setIsResult(false);
+        });
     }
 
     const successCallback = (exams) => {
@@ -144,27 +154,15 @@ const ExamsTable = ({ history }) => {
         history.push(`quiz/${record.id}`)
     }
 
-    const loadResult = (record) => async() => {
-        
-        api.find('userResults', 'quizId', '==', record.id).then((quizs) => {
-            const result = quizs.find(quiz => quiz.uid=== user.uid);
-            console.log(result);
-        });
-    }
-
     const handleDraweClose = () => {
         setShowDrawer(false);
     }
 
     const getViewBtn = (record) => {
         return isAdmin
-            ? <Tooltip placement='bottom' title='View Quiz'>
-                <Button type="link" onClick={preview(record)}>
-                    <Icon type="eye" />
-                </Button>
-            </Tooltip>
+            ? ''
             : record.status === 'Completed'
-                ? <Button type="primary" onClick={loadResult(record)}>
+                ? <Button type="primary" loading={isResult} onClick={viewResult(record)}>
                     View Result
                 </Button>
                 : <Button type="primary" onClick={loadQuiz(record)}>
@@ -230,11 +228,12 @@ const ExamsTable = ({ history }) => {
                         )
                         : <Skeleton active />
             }
-            <ViewQuestions
+           { showModal && <ViewQuestions
                 quiz={quiz}
+                summary={summary}
                 hideDrawer={closeModal}
                 showDrawer={showModal}>
-            </ViewQuestions>
+            </ViewQuestions>}
             {showDrawer && <AssignQuiz visible={showDrawer} handleClose={handleDraweClose} quiz={quiz}></AssignQuiz>}
         </>
 
