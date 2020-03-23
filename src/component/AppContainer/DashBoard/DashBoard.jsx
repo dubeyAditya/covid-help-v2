@@ -8,7 +8,7 @@ import { appContext } from "../../../context";
 
 const { Content, Sider } = Layout;
 
-
+let currentPathname = null;
 const DashBoard = ({ history }) => {
 
   const app = useContext(appContext);
@@ -17,6 +17,19 @@ const DashBoard = ({ history }) => {
 
   useEffect(() => {
     history.push(route);
+    history.listen((newLocation, action) => {
+      if (action === "PUSH") {
+        if (newLocation.pathname !== currentPathname) {
+          currentPathname = newLocation.pathname;
+          history.push({
+              pathname: newLocation.pathname,
+              search: newLocation.search
+            });
+          }
+        } else {
+          history.go(1);
+        }
+      });
      // eslint-disable-next-line
   }, []);
 

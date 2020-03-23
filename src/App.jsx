@@ -20,7 +20,7 @@ const auth = firebase.getAuth();
 
 const App = ({ signInWithGoogle, signOut, user }) => {
 
-  const [appState, setAppState] = useState({loading: true});
+  const [appState, setAppState] = useState({ isAdmin: false, hasViewAccess: false, isGuest: true, loading: true });
 
   const authContextValue = { signOut, user };
 
@@ -31,7 +31,7 @@ const App = ({ signInWithGoogle, signOut, user }) => {
       setTimeout(() => {
         setAppState({ loading: false });
         unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) { 
+          if (user) {
             setAuthAsync(user);
           }
         });
@@ -45,11 +45,14 @@ const App = ({ signInWithGoogle, signOut, user }) => {
 
   const setAuthAsync = async (user) => {
     setAppState({ loading: true });
-    const [ student ] = await api.find('users', 'uid','==', user.uid);
-    const  isAdmin = student.role === 'admin'; 
-    const hasViewAccess = isAdmin || student.enabled;
-    console.log("User :",student)
-    setAppState({ isAdmin, hasViewAccess, loading: false });
+    const [student] = await api.find('users', 'uid', '==', user.uid);
+    let isAdmin = false, hasViewAccess = false, isGuest = true;
+    if (student) {
+      isAdmin = student.role === 'admin';
+      hasViewAccess = (isAdmin || student.enabled);
+      isGuest = false;
+    }
+    setAppState({ isAdmin, hasViewAccess, isGuest, loading: false });
   }
 
   const loadAppContent = () => {

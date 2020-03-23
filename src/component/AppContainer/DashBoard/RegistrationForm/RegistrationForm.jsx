@@ -6,7 +6,8 @@ import {
     Select,
     Button,
     message,
-    Result
+    Result,
+    Spin
 } from 'antd';
 import { AuthContext } from "../../../../context";
 import { Student } from "../../../../models/user.model";
@@ -20,7 +21,8 @@ class RegistrationForm extends React.Component {
     state = {
         confirmDirty: false,
         autoCompleteResult: [],
-        isRegisterd: false
+        isRegisterd: false,
+        isLoading: false
     };
 
     handleSubmit = (e) => {
@@ -31,14 +33,18 @@ class RegistrationForm extends React.Component {
                 const name = values.first_name + " " + values.last_name;
                 const studentData = { ...user, ...values, name };
                 const student = new Student(studentData).serialize();
+                this.setState({isLoading:true});
                 api.add('users', student)
                     .then(() => {
-                        this.setState({ isRegisterd: true });
+                        this.setState({ isRegisterd: true, isLoading:false });
                         setTimeout(() => {
                             window.location.reload();
                         }, 5000);
                     })
                     .catch((err) => message.error("Opps Something went wrong. Please try after sometime."));
+            }
+            else {
+                message.error("Plese Enter All Mandatory Field!")
             }
         });
     };
@@ -88,7 +94,7 @@ class RegistrationForm extends React.Component {
                     title="Successfully Registered!"
                     subTitle="Welcome to Newton Academy. You will be redirected in few seconds."
                 />
-                : <>
+                : <Spin spinning={this.state.isLoading}>
                     <Form {...formItemLayout} onSubmit={this.handleSubmit}>
                         <Form.Item label="E-mail">
                             {getFieldDecorator('email', {
@@ -156,12 +162,12 @@ class RegistrationForm extends React.Component {
                         </Form.Item>
 
                         <Form.Item {...tailFormItemLayout}>
-                            <Button type="primary" htmlType="submit">
+                            <Button loading={this.state.isLoading} type="primary" htmlType="submit">
                                 Register
                     </Button>
                         </Form.Item>
                     </Form>
-                </>
+                </Spin>
         );
     }
 
