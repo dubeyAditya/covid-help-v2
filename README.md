@@ -1,6 +1,9 @@
-# Investa
+# Exam Machine
 
-Investa is a Investment analysis tool for identifying profit loss and tracks sell and Purchase.
+Smart Exam System is a next Generation  E-Exam for Students, Teacher and Guardians.
+Appear for exam see results get notifications and find out the Skill which need to be Updated.
+Daboard to see progress for student.
+Notification for Events, Exams, Results, Attendence.
 
 
 ## Installation
