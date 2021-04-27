@@ -12,7 +12,7 @@ const Login = ({ signInWithGoogle }) => {
     <div className="login-wrapper">
       <Card
         style={{ width: 300 }}
-        cover={<img alt="Newton Academey" src="/Newton Logo.png" />}
+        cover={<img alt="Covid Resourc Volenteer" src="/cvr.jpg" />}
       >
         <div className="btn-google">
           <Button type="primary" block onClick={signInWithGoogle}>
