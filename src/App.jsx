@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./App.scss";
 
 import Loading from "./component/Loading";
-
-import Login from "./component/Login";
 
 import AppContainer from "./component/AppContainer"; // Root or Container Component
 
@@ -11,69 +9,64 @@ import withFirebaseAuth from "react-with-firebase-auth"; // authorization
 
 import firebase from "./firebase";
 
-import api from "./services";
-
 import { AuthContext, appContext as AppContext } from "./context";
 
-const auth = firebase.getAuth();
 
 
-const App = ({ signInWithGoogle, signOut, user }) => {
-
-  const [appState, setAppState] = useState({ isAdmin: false, hasViewAccess: false, isGuest: true, loading: true });
-
-  const authContextValue = { signOut, user };
+class App extends React.Component {
 
 
-  useEffect(() => {
-    let unsubscribe;
-    if (!user) {
-      setTimeout(() => {
-        setAppState({ loading: false });
-        unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) {
-            setAuthAsync(user);
-          }
-        });
-      }, 3000);
-    }
-
-    return () => unsubscribe();
-    // eslint-disable-next-line
-  }, []);
-
-
-  const setAuthAsync = async (user) => {
-    setAppState({ loading: true });
-    const [student] = await api.find('users', 'uid', '==', user.uid);
-    let isAdmin = false, hasViewAccess = false, isGuest = true;
-    if (student) {
-      isAdmin = student.role === 'admin';
-      hasViewAccess = (isAdmin || student.enabled);
-      isGuest = false;
-    }
-    setAppState({ isAdmin, hasViewAccess, isGuest, loading: false });
+  constructor() {
+    super();
+    this.state = {
+      oxygen: [],
+      remdesivir: [],
+      fabiflu: [],
+      beds: [],
+      plasma: [],
+      others:[],
+      links:[],
+      loading: false
+    };
   }
 
-  const loadAppContent = () => {
+
+
+
+  componentWillMount() {
+    this.setState({ loading: true });
+  }
+
+  componentDidMount() {
+    firebase.subscribeDb("oxygen", (value) => this.setState({ oxygen: value, loading: false }));
+    firebase.subscribeDb("remdesivir", (value) => this.setState({ remdesivir: value }));
+    firebase.subscribeDb("fabiflu", (value) => this.setState({ fabiflu: value }));
+    firebase.subscribeDb("beds", (value) => this.setState({ beds: value }));
+    firebase.subscribeDb("plasma", (value) => this.setState({ plasma: value }));
+    firebase.subscribeDb("others", (value) => this.setState({ others: value }));
+    firebase.subscribeDb("links", (value) => this.setState({ links: value }));
+  }
+
+
+
+  loadAppContent() {
     return (
-      <AppContext.Provider value={appState}>
-        <AuthContext.Provider value={authContextValue}>
+      <AppContext.Provider value={this.state}>
+        <AuthContext.Provider value={null}>
           <AppContainer />
         </AuthContext.Provider>
       </AppContext.Provider>
     );
   };
 
-  const authenticateUser = () => {
-    return !user ? <Login signInWithGoogle={signInWithGoogle} /> : loadAppContent();
-  };
+  render() {
 
-  return (
-    <div className="application-wrapper">
-      {appState.loading ? <Loading></Loading> : authenticateUser()}
-    </div>
-  );
+    return (
+      <div className="application-wrapper">
+        { this.state.loading ? <Loading></Loading> : this.loadAppContent()}
+      </div>
+    );
+  }
 };
 
 export default withFirebaseAuth(firebase)(App);

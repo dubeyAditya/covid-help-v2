@@ -9,7 +9,7 @@ class ApplicationContext {
     }
 }
 
-const appContext = React.createContext(null);
+const appContext = React.createContext({ oxygen: [], remdesivir: [], fabiflu: [], beds: [] });
 export {
     appContext,
     ApplicationContext
