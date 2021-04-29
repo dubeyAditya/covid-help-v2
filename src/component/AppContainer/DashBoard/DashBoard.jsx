@@ -10,7 +10,7 @@ import ResourceList from "./ResourceList";
 
 const { Content, Sider } = Layout;
 
-const DashBoard = () => {
+const DashBoard = ({history}) => {
   const [container, setContainer] = useState(null);
   return (
     <Layout
@@ -28,7 +28,7 @@ const DashBoard = () => {
           <img width="180px" height="150px" src="/cvr.jpg" alt="" />
         </div>
         <Divider></Divider>
-        <NavigationMenu />
+        <NavigationMenu history={history} />
       </Sider>
       <Layout style={{ minHeight: "100%" }}>
         {/* <NavigationHeader /> */}

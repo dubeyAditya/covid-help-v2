@@ -18,10 +18,14 @@ export const GridWrapper = styled.div`
 display: flex;
 flex-direction: column;
 margin-bottom: 1rem;
-margin-top: 0.5rem;
+margin-top: 1rem;
 
 & > div {
   margin-bottom: 1rem;
 }
 
 `;
+
+export const TitleWapeer = styled.div`
+margin-left: 1rem;
+`

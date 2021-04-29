@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, Icon } from "antd";
 import { Link } from "react-router-dom";
 const { SubMenu } = Menu;
@@ -51,11 +51,11 @@ const { SubMenu } = Menu;
 //   );
 // };
 
-const GuestNavigation = () => {
+const GuestNavigation = ({route}) => {
   return (
     <Menu
       mode="inline"
-      defaultSelectedKeys={["1"]}
+      defaultSelectedKeys={route}
       defaultOpenKeys={["sub1"]}
       style={{
         borderRight: 0,
@@ -68,30 +68,29 @@ const GuestNavigation = () => {
         key="sub1"
         title={
           <span>
-            <Icon type="laptop" />
             Resources
           </span>
         }
       >
-        <Menu.Item key="1">
+        <Menu.Item key="oxygen">
           <Link to="/oxygen"> Oxygen </Link>
         </Menu.Item>
-        <Menu.Item key="2">
+        <Menu.Item key="beds">
           <Link to="/beds"> Bed </Link>
         </Menu.Item>
-        <Menu.Item key="3">
+        <Menu.Item key="remdesivir">
           <Link to="/remdesivir"> Remdesivir </Link>
         </Menu.Item>
-        <Menu.Item key="4">
+        <Menu.Item key="fabiflu">
           <Link to="/fabiflu"> Fabiflu </Link>
         </Menu.Item>
-        <Menu.Item key="5">
+        <Menu.Item key="plasma">
           <Link to="/plasma"> Plasma </Link>
         </Menu.Item>
-        <Menu.Item key="6">
+        <Menu.Item key="others">
           <Link to="/others"> Meals/Tests </Link>
         </Menu.Item>
-        <Menu.Item key="7">
+        <Menu.Item key="links">
           <Link to="/links"> More Links </Link>
         </Menu.Item>
       </SubMenu>
@@ -99,8 +98,16 @@ const GuestNavigation = () => {
   );
 };
 
-const NavigationMenu = () => {
-  return <GuestNavigation />;
+const NavigationMenu = ({history}) => {
+  
+  const [route, setRoute]= useState("oxygen");
+
+  useEffect(()=> {
+    history.listen(({pathname}) => setRoute(pathname.substr(1)));
+  },[history]);
+
+
+  return <GuestNavigation route={route}/>;
 };
 
 export default NavigationMenu;

@@ -29,7 +29,7 @@ const Filter = () => {
         <Select
           mode="multiple"
           style={{ width: "100%" }}
-          placeholder="select or type one location"
+          placeholder="select or type one location for selected resource"
           defaultValue={[]}
           onChange={handleChange}
           optionLabelProp="label"

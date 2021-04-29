@@ -39,7 +39,6 @@ class FireBaseAdapter {
     const ref = this.getDatabase().ref().child(id);
     ref.on("value", snap => {
       cb(snap.val());
-      console.log(snap.val());
     });
     return this
   }
