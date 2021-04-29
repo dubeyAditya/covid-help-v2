@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Avatar, Dropdown, Menu, Icon, Select } from "antd";
+import { Select } from "antd";
 import { appContext } from "../../../../context";
 const { Option } = Select;
 

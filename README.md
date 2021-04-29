@@ -1,9 +1,6 @@
-# Exam Machine
+# Covid-19 Resource Dashboard
 
-Smart Exam System is a next Generation  E-Exam for Students, Teacher and Guardians.
-Appear for exam see results get notifications and find out the Skill which need to be Updated.
-Daboard to see progress for student.
-Notification for Events, Exams, Results, Attendence.
+To help people with resource finding and status of availability in different regions.
 
 
 ## Installation
