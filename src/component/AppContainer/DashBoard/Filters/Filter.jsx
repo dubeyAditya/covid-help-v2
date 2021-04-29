@@ -9,7 +9,7 @@ const Filter = () => {
 
    const handleChange = useCallback((value) => {
     setFilter(value);
-   });
+   }, []);
 
   useEffect(() => {
     setLoactions(() => {
