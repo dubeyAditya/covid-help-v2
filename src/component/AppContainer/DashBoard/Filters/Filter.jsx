@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Select } from "antd";
 import { appContext } from "../../../../context";
 const { Option } = Select;
@@ -7,9 +7,9 @@ const Filter = () => {
   const { resources, setFilter } = useContext(appContext);
   const [locations, setLoactions] = useState({});
 
-   const handleChange = useCallback((value) => {
+   const handleChange = (value) => {
     setFilter(value);
-   }, []);
+   };
 
   useEffect(() => {
     setLoactions(() => {
@@ -20,8 +20,8 @@ const Filter = () => {
         return { ...result, ...more };
       }, {});
     });
-    handleChange([]);
-  }, [resources, handleChange]);
+     setFilter([]);
+  }, [resources, setFilter]);
   return (
     <div className="navigation-header">
       <div>State or City</div>
