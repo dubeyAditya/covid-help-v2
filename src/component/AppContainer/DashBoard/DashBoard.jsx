@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Layout, Divider, Affix } from "antd";
+import React from "react";
+import { Layout, Divider } from "antd";
 import { Redirect, Route, withRouter } from "react-router-dom";
 import { NavigationMenu } from "../DashBoard";
 import Filter from "./Filters";
@@ -11,7 +11,7 @@ import ResourceList from "./ResourceList";
 const { Content, Sider } = Layout;
 
 const DashBoard = ({history}) => {
-  const [container, setContainer] = useState(null);
+
   return (
     <Layout
       style={{
