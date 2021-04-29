@@ -21,7 +21,7 @@ const Filter = () => {
       }, {});
     });
     handleChange([]);
-  }, [resources]);
+  }, [resources, handleChange]);
   return (
     <div className="navigation-header">
       <div>State or City</div>
