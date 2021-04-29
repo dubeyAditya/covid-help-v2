@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import { Select } from "antd";
 import { appContext } from "../../../../context";
 const { Option } = Select;
@@ -7,9 +7,9 @@ const Filter = () => {
   const { resources, setFilter } = useContext(appContext);
   const [locations, setLoactions] = useState({});
 
-  function handleChange(value) {
+   const handleChange = useCallback((value) => {
     setFilter(value);
-  }
+   });
 
   useEffect(() => {
     setLoactions(() => {
