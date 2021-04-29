@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu, Icon } from 'antd';
+import { Menu, Icon } from "antd";
 import { Link } from "react-router-dom";
 const { SubMenu } = Menu;
 
@@ -24,7 +24,7 @@ const { SubMenu } = Menu;
 //           <Link to="/students">Volunteer Details</Link>
 //         </Menu.Item>
 //       </SubMenu>
-     
+
 //       <SubMenu
 //         key="sub2"
 //         title={
@@ -46,7 +46,7 @@ const { SubMenu } = Menu;
 //         <Menu.Item key="4">
 //           <Link to="/fabiflu"> Fabiflu </Link>
 //         </Menu.Item>
-//       </SubMenu>  
+//       </SubMenu>
 //     </Menu>
 //   );
 // };
@@ -57,7 +57,12 @@ const GuestNavigation = () => {
       mode="inline"
       defaultSelectedKeys={["1"]}
       defaultOpenKeys={["sub1"]}
-      style={{ height: "100%", borderRight: 0, marginTop:"1rem" }}
+      style={{
+        borderRight: 0,
+        marginTop: "1rem",
+        overflow: "auto",
+        height: "calc(100% - 150px)",
+      }}
     >
       <SubMenu
         key="sub1"
@@ -65,10 +70,10 @@ const GuestNavigation = () => {
           <span>
             <Icon type="laptop" />
             Resources
-            </span>
+          </span>
         }
       >
-       <Menu.Item key="1">
+        <Menu.Item key="1">
           <Link to="/oxygen"> Oxygen </Link>
         </Menu.Item>
         <Menu.Item key="2">
@@ -94,10 +99,8 @@ const GuestNavigation = () => {
   );
 };
 
-
 const NavigationMenu = () => {
- 
-  return  <GuestNavigation />;
-}
+  return <GuestNavigation />;
+};
 
 export default NavigationMenu;

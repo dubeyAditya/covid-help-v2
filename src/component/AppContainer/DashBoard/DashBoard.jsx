@@ -41,7 +41,7 @@ const DashBoard = () => {
             minHeight: 280,
             height: "100%",
             paddingTop: "1.5rem",
-            overFlow: "auto",
+            overflow: "auto",
           }}
         >
           <Route exact path="/">
