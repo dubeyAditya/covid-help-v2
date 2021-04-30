@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./App.scss";
 
 import Loading from "./component/Loading";
-
-import Login from "./component/Login";
 
 import AppContainer from "./component/AppContainer"; // Root or Container Component
 
@@ -11,69 +9,122 @@ import withFirebaseAuth from "react-with-firebase-auth"; // authorization
 
 import firebase from "./firebase";
 
-import api from "./services";
-
 import { AuthContext, appContext as AppContext } from "./context";
 
-const auth = firebase.getAuth();
-
-
-const App = ({ signInWithGoogle, signOut, user }) => {
-
-  const [appState, setAppState] = useState({ isAdmin: false, hasViewAccess: false, isGuest: true, loading: true });
-
-  const authContextValue = { signOut, user };
-
-
-  useEffect(() => {
-    let unsubscribe;
-    if (!user) {
-      setTimeout(() => {
-        setAppState({ loading: false });
-        unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) {
-            setAuthAsync(user);
-          }
-        });
-      }, 3000);
-    }
-
-    return () => unsubscribe();
-    // eslint-disable-next-line
-  }, []);
-
-
-  const setAuthAsync = async (user) => {
-    setAppState({ loading: true });
-    const [student] = await api.find('users', 'uid', '==', user.uid);
-    let isAdmin = false, hasViewAccess = false, isGuest = true;
-    if (student) {
-      isAdmin = student.role === 'admin';
-      hasViewAccess = (isAdmin || student.enabled);
-      isGuest = false;
-    }
-    setAppState({ isAdmin, hasViewAccess, isGuest, loading: false });
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      resources: {
+        oxygen: [],
+        remdesivir: [],
+        fabiflu: [],
+        beds: [],
+        plasma: [],
+        others: [],
+        links: [],
+      },
+      search: {
+        oxygen: [],
+        remdesivir: [],
+        fabiflu: [],
+        beds: [],
+        plasma: [],
+        others: [],
+        links: [],
+      },
+      loading: false,
+      locations: [],
+    };
   }
 
-  const loadAppContent = () => {
+  componentWillMount() {
+    this.setState({ loading: true });
+  }
+
+  componentDidMount() {
+    firebase.subscribeDb("oxygen", (value) =>
+      this.setState((prev) => ({
+        resources: { ...prev.resources, oxygen: value },
+        loading: false,
+      }))
+    );
+    firebase.subscribeDb("remdesivir", (value) =>
+      this.setState((prev) => ({
+        resources: { ...prev.resources, remdesivir: value },
+      }))
+    );
+    firebase.subscribeDb("fabiflu", (value) =>
+      this.setState((prev) => ({
+        resources: { ...prev.resources, fabiflu: value },
+      }))
+    );
+    firebase.subscribeDb("beds", (value) =>
+      this.setState((prev) => ({
+        resources: { ...prev.resources, beds: value },
+      }))
+    );
+    firebase.subscribeDb("plasma", (value) =>
+      this.setState((prev) => ({
+        resources: { ...prev.resources, plasma: value },
+      }))
+    );
+    firebase.subscribeDb("others", (value) =>
+      this.setState((prev) => ({
+        resources: { ...prev.resources, others: value },
+      }))
+    );
+    firebase.subscribeDb("links", (value) =>
+      this.setState((prev) => ({
+        resources: { ...prev.resources, links: value },
+      }))
+    );
+  }
+
+  setFilter = (value) => {
+    if (value.length) {
+      this.setState((prev) => {
+        const filtred = Object.keys(prev.resources).reduce((result, res) => {
+          const resource = prev.resources[res];
+          return {
+            ...result,
+            [res]: resource.filter((ele) =>
+              value.includes((ele.State_City || "").toLowerCase())
+            ),
+          };
+        }, {});
+        return { search: filtred, locations: value };
+      });
+    } else {
+      this.setState((prev) => {
+        return { search: prev.resources, locations: value };
+      });
+    }
+  };
+
+  loadAppContent() {
     return (
-      <AppContext.Provider value={appState}>
-        <AuthContext.Provider value={authContextValue}>
+      <AppContext.Provider
+        value={{
+          resources: this.state.resources,
+          search: this.state.search,
+          setFilter: this.setFilter,
+        }}
+      >
+        <AuthContext.Provider value={null}>
           <AppContainer />
         </AuthContext.Provider>
       </AppContext.Provider>
     );
-  };
+  }
 
-  const authenticateUser = () => {
-    return !user ? <Login signInWithGoogle={signInWithGoogle} /> : loadAppContent();
-  };
-
-  return (
-    <div className="application-wrapper">
-      {appState.loading ? <Loading></Loading> : authenticateUser()}
-    </div>
-  );
-};
+  render() {
+    return (
+      <div className="application-wrapper">
+        {this.state.loading ? <Loading></Loading> : this.loadAppContent()}
+      </div>
+    );
+  }
+}
 
 export default withFirebaseAuth(firebase)(App);

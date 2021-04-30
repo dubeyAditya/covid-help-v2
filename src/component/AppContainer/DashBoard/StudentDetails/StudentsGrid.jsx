@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { Card, Icon, Switch, Tooltip } from "antd";
 import { GridWrapper } from "./style";
-import { Student } from "../../../../models/user.model";
 
-const Grid = ({ students, changeAccess, isLoading }: any) => {
+
+const Grid = ({ students, changeAccess, isLoading }) => {
 
   const [loading, setLoading] = useState(false);
 
 
-  const toggleAccess = (student:Student) => (value:any) =>{
+  const toggleAccess = (student) => (value) =>{
     setLoading(true);
     changeAccess(student)(value);
   }
 
 
-  const getCardList = (student: Student) => (
+  const getCardList = (student) => (
     <Card
       size="small"
       hoverable

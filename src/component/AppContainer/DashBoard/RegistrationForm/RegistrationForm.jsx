@@ -10,7 +10,6 @@ import {
     Spin
 } from 'antd';
 import { AuthContext } from "../../../../context";
-import { Student } from "../../../../models/user.model";
 import api from '../../../../services'
 
 
@@ -31,17 +30,18 @@ class RegistrationForm extends React.Component {
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 const name = values.first_name + " " + values.last_name;
-                const studentData = { ...user, ...values, name };
-                const student = new Student(studentData).serialize();
+                const studentData = { uid:user.uid, ...values, name };
+                const student = studentData;
                 this.setState({isLoading:true});
                 api.add('users', student)
                     .then(() => {
-                        this.setState({ isRegisterd: true, isLoading:false });
+                        this.setState({ isRegisterd: true});
                         setTimeout(() => {
                             window.location.reload();
-                        }, 5000);
+                        }, 2000);
                     })
-                    .catch((err) => message.error("Opps Something went wrong. Please try after sometime."));
+                    .catch((err) => message.error("Opps Something went wrong. Please try after sometime."))
+                    .finally(()=> this.setState({  isLoading:false }))
             }
             else {
                 message.error("Plese Enter All Mandatory Field!")
@@ -59,11 +59,11 @@ class RegistrationForm extends React.Component {
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: { span: 4 },
+                sm: { span: 4 ,offset: 4},
             },
             wrapperCol: {
                 xs: { span: 24 },
-                sm: { span: 20 },
+                sm: { span: 10 },
             },
         };
         const tailFormItemLayout = {
@@ -140,25 +140,16 @@ class RegistrationForm extends React.Component {
                             })(<Input addonBefore={prefixSelector} style={{ width: '100%' }} />)}
                         </Form.Item>
 
-                        <Form.Item label="Course Name">
-                            {getFieldDecorator('course', {
-                                rules: [{ required: true, message: 'Please Select Course!' }],
-                            })(<Select>
-                                <Option value='Senior Secondary'> Senior Secondary Exams (9-12th) </Option>
-                                <Option value='Competitive'> Competitive Exams(Sanvida Varg 3) </Option>
-                            </Select>)}
+                        <Form.Item label="State">
+                        {getFieldDecorator('state', {
+                                rules: [{ required: true, message: 'Please input your State!', whitespace: true }],
+                            })(<Input />)}
                         </Form.Item>
 
-                        <Form.Item label="Batch Name">
-                            {getFieldDecorator('className', {
-                                rules: [{ required: true, message: 'Please Select Batch!' }],
-                            })(<Select>
-                                <Option value='Samvida'> Samvida </Option>
-                                <Option value='9'> 9<sup>th</sup> </Option>
-                                <Option value='10'> 10<sup>th</sup> </Option>
-                                <Option value='11'> 11<sup>th</sup> </Option>
-                                <Option value='12'> 12<sup>th</sup> </Option>
-                            </Select>)}
+                        <Form.Item label="City">
+                            {getFieldDecorator('city', {
+                                rules: [{ required: true, message: 'Please input your City!', whitespace: true }],
+                            })(<Input />)}
                         </Form.Item>
 
                         <Form.Item {...tailFormItemLayout}>
@@ -167,6 +158,7 @@ class RegistrationForm extends React.Component {
                     </Button>
                         </Form.Item>
                     </Form>
+                    {/* {React.useMemo(<ResourceList></ResourceList>)} */}
                 </Spin>
         );
     }

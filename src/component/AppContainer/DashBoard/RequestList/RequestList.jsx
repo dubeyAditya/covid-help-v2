@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 
 import { Table, Divider, Button, Icon, Skeleton, message, Popconfirm, Tooltip, Empty, Alert } from "antd";
 
-import "./ExamsTable.scss";
+
 
 import api from "../../../../services";
 

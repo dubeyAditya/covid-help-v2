@@ -1,73 +1,84 @@
-import React, { useEffect, useContext } from "react";
-import { QuesionForm, ExamsTable, NavigationMenu, StudentsTable, NavigationHeader, Profile, QuizTable, MyQuiz } from ".";
-import { Layout, Empty } from "antd";
-import { Route, withRouter } from "react-router-dom";
-
+import React from "react";
+import { Layout, Divider } from "antd";
+import { Redirect, Route, withRouter } from "react-router-dom";
+import { NavigationMenu } from "../DashBoard";
+import Filter from "./Filters";
 import "./DashBoard.scss";
-import { appContext } from "../../../context";
+import ResourceGrid from "./ResourceList/ResourceGrid";
+
+import ResourceList from "./ResourceList";
 
 const { Content, Sider } = Layout;
 
-let currentPathname = null;
-const DashBoard = ({ history }) => {
-
-  const app = useContext(appContext);
-
-  const route = app.isAdmin ? "/myQuizs" :  app.hasViewAccess ? "/myQuizs" : "/myProfile";
-
-  useEffect(() => {
-    history.push(route);
-    history.listen((newLocation, action) => {
-      if (action === "PUSH") {
-        if (newLocation.pathname !== currentPathname) {
-          currentPathname = newLocation.pathname;
-          history.push({
-              pathname: newLocation.pathname,
-              search: newLocation.search
-            });
-          }
-        } else {
-          history.go(1);
-        }
-      });
-     // eslint-disable-next-line
-  }, []);
+const DashBoard = ({history}) => {
 
   return (
-    <Layout>
-      <Sider breakpoint="lg"
+    <Layout
+      style={{
+        overflowX: "auto",
+      }}
+    >
+      <Sider
+        className="sider"
+        breakpoint="md"
         collapsedWidth="0"
-        style={{ background: "#fff" }}>
+        style={{ background: "#fff" }}
+      >
         <div className="logo">
-          <img width="180px" height="75px" src="/Newton Logo.png" alt="" />
+          <img width="180px" height="150px" src="/cvr.jpg" alt="" />
         </div>
-        <NavigationMenu />
+        <Divider></Divider>
+        <NavigationMenu history={history} />
       </Sider>
-      <Layout
-        className="display-container"
-        style={{ minHeight: "100%", padding: "0 24px 24px" }}>
-        <NavigationHeader />
+      <Layout style={{ minHeight: "100%" }}>
+        {/* <NavigationHeader /> */}
+        <Filter></Filter>
+
         <Content
           style={{
             background: "#fff",
-            padding: 24,
             margin: 0,
             minHeight: 280,
             height: "100%",
-            overflowY: "auto"
+            paddingTop: "1.5rem",
+            overflow: "auto",
           }}
         >
-          <Route path="/students" component={StudentsTable}></Route>
-          <Route path="/myExam" component={ExamsTable}></Route>
-          <Route path="/addExam" component={QuesionForm}></Route>
-          <Route path="/myProfile" component={Profile}></Route>
-          <Route path="/myQuizs" component={QuizTable}></Route>
-          <Route path="/noData" component={Empty}></Route>
-          <Route path="/quiz/:quizId" component={MyQuiz}></Route>
+          <Route exact path="/">
+            <Redirect to="oxygen"></Redirect>
+          </Route>
+          <Route
+            path="/oxygen"
+            render={(props) => <ResourceGrid id="oxygen" {...props} />}
+          ></Route>
+          <Route
+            path="/beds"
+            render={(props) => <ResourceGrid id="beds" {...props} />}
+          ></Route>
+          <Route
+            path="/remdesivir"
+            render={(props) => <ResourceGrid id="remdesivir" {...props} />}
+          ></Route>
+          <Route
+            path="/fabiflu"
+            render={(props) => <ResourceGrid id="fabiflu" {...props} />}
+          ></Route>
+          <Route
+            path="/plasma"
+            render={(props) => <ResourceGrid id="plasma" {...props} />}
+          ></Route>
+          <Route
+            path="/others"
+            render={(props) => <ResourceGrid id="others" {...props} />}
+          ></Route>
+          <Route
+            path="/links"
+            render={(props) => <ResourceList id="links" {...props} />}
+          ></Route>
         </Content>
       </Layout>
     </Layout>
   );
-}
+};
 
 export default withRouter(DashBoard);

@@ -74,16 +74,16 @@ const StudentsTable = () => {
         </div>
       </GridHeaderWrapper>
       {isList ?
-        <Table dataSource={students} size="small" loading={isLoading} pagination={{ pageSize: 10 }}>
-          <Column title="Name" dataIndex="name" key="name" />
-          <Column title="Contact" dataIndex="phoneNumber" key="phoneNumber" />
-          <Column title="Class" dataIndex="className" key="className" render={(text) => (text.length < 3 ? <Tag color="purple">{text} <sup>th</sup></Tag> : <Tag color="green">{text}</Tag>)} />
-          <Column title="Course" dataIndex="course" key="course" />
-          <Column title="Access" dataIndex="enabled" key="enabled"
-            render={(text, record) => (
-              <Tooltip placement='bottom' title="Change Permission"> <Switch size="small" checked={record.enabled} onChange={changeAccess(record)} /></Tooltip>
-            )} />
-        </Table>
+         <Table dataSource={students} size="small" loading={isLoading} pagination={{ pageSize: 10 }}>
+         <Column title="Name" dataIndex="name" key="name" />
+         <Column title="Contact" dataIndex="phoneNumber" key="phoneNumber" />
+         <Column title="State" dataIndex="state" key="state" render={(text) => (text.length < 3 ? <Tag color="purple">{text} <sup>th</sup></Tag> : <Tag color="green">{text}</Tag>)} />
+         <Column title="City" dataIndex="city" key="city" />
+         <Column title="Access" dataIndex="enabled" key="enabled"
+           render={(text, record) => (
+             <Tooltip placement='bottom' title="Change Permission"> <Switch size="small" checked={record.enabled} onChange={changeAccess(record)} /></Tooltip>
+           )} />
+       </Table>
         : <>
           <GridBodyWrapper>
             <StudentsGrid students={students} isLoading={isLoading} changeAccess={changeAccess}></StudentsGrid>

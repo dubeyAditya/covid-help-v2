@@ -1,18 +1,28 @@
 .logo {
-    height:100px;
-    width: 180px;
-    background: rgba(255, 255, 255,.8);
-    margin: 10px;
-    text-decoration-color: aliceblue;
-  
+  height: 100px;
+  width: 180px;
+  background: rgba(255, 255, 255, 0.8);
+  margin: 10px;
+  text-decoration-color: aliceblue;
 }
 
-.navigation-header{
-  margin:1em;  
+.navigation-header {
+  position: sticky;
+  top: 0;
+  padding: 10px;
+  background: #fafafa;
+  z-index: 100;
+  border-bottom: 1px solid #eae4e4;
 }
 
- .flex-center-all{
-     display: flex;
-      justify-content: space-between;
-      align-items: center;
- } 
+.flex-center-all {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sider .ant-layout-sider-zero-width-trigger {
+  top: 75px;
+  opacity: 0.6;
+  z-index: 101;
+}
